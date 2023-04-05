@@ -1,0 +1,225 @@
+<h1>Changelog</h1>
+<hr>5 April 2023
+<br>-fixed auras (there was a bug due to yesterday's update)
+<br>-rammer base is no longer hard-coded in client code
+<br>-each hive have their own bot limit, so it's easier to farm in dune
+<br>-added fighter
+<hr>4 April 2023
+<br>-a bug has been found: apparently portals in cavern disappeared twice as fast compared to other portals. this has been fixed
+<br>-added object death animation
+<br>-buffed double's reload
+<br>-double, triple, and quadruple now have alternate shooting like twin
+<br>-nerfed triple's bullet range
+<br>-fixed bug causing long line next to stars
+<hr>3 April 2023 (2)
+<br>-changed twin
+<br>-buffed basic's reload and bullet speed
+<br>-added animation for upgrade button when hovering
+<br>-added opacity animation to tank stats
+<br>-tanks in the upgrade buttons now rotate
+<br>-shapes now rotate
+<br>-press 'o' to open settings ingame
+<br>-added animation for popups
+<hr>3 April 2023
+<br>-new tank: rimfire
+<br>-made upgrade tree neater, still not complete
+<br>-minimap is darker
+<br>-portals are different on the minimap. orange indicates portal to dune, radiant indicates portal to cavern, and white indicates portal to arena
+<br>-nerfed body damage (1 -> 0.1)
+<hr>2 April 2023
+<br>-server side changes to allow proper barrel balancing
+<hr>1 April 2023
+<br>-Apil Fools event
+<hr>31 March 2023
+<br>-reset barrel shooting animation after upgrading, hopefully it will prevent long barrel bug
+<br>-completion of upgrade tree (press y). More features to the upgrade tree will come in a future update.
+<br>-changed the color of upgrade tree slightly so the connections are visible in cavern
+<br>-fixed double, triple and quadruple barrels
+<br>-new colors for shapes
+<br>-halved shape health and reduced shape damage
+<br>-all shapes now have fixed outline width of 5
+<br>-shapes have different amounts of weight, so smaller shapes can now be pushed
+<br>-shape collision now feels less rough
+<hr>30 March 2023
+<br>-buffed palace
+<br>-buffed basic's reload and nerfed bullet damage
+<br>-buffed twin's reload and nerfed bullet damage
+<br>-buffed double's reload and nerfed bullet damage
+<br>-buffed flank's reload and nerfed bullet damage
+<br>-fixed knockback's upgrades having knockback too
+<br>-added upgrade tree (press y)
+<br>-buffed gunner's bullet speed
+<br>-score needed for each level is now exponential, hopefully this will make the front part of the game easier. Levels for upgrading are now lvl 1, 5, 20, 45 and 100 (1.17m score for tier 6). Additional info for those interested: exponential equation used: 1.05^x * 9000 - 9000. Size growth per level: 0.5, stops growing at lvl 160
+<br>-tier 6 tanks have been buffed
+<br>-nerfed basic's body damage
+<br>-added pounder, all ter 6 ram tank
+<br>-tier 6 tank bodies are now hexagons on the upgrade buttons
+<br>-tank stats popup look better now
+<br>-auras on upgrade buttons are now slightly transparent
+<hr>27 March 2023
+<br>-fixed bug causing server disconnect when killing another player
+<br>-decreased aura transparency
+<br>-added settings
+<br>-added radiant aura size slider in settings
+<br>-buffed hailstorm's speed (3->5)
+<br>-fixed negative health bar
+<br>-added 2 new tier 6 tanks: bombshell and oven (bombshell isnt the same as the bombshell in rocketer clones)
+<hr>26 March 2023
+<br>-significant improvement to the lag
+<hr>25 March 2023
+<br>-changed shape spawn rates and shape scores and health
+<br>-nerfed cavern spawn rate for bigger shapes, but cavern still gives a lot of score
+<br>-added barrel animation when shooting
+<br>-tier 6 tanks are now purple even if it's an enemy
+<br>-added animation when upgrade button appears
+<hr>24 March 2023
+<br>-buffed reload recover for triple
+<br>-added quadruple which upgrades from triple
+<br>-added tier 6: hailstorm, bunker, chaos. Can be accessed at level 500
+<hr>23 March 2023
+<br>-different hives in dune now have different spawn rates
+<br>-tank upgrade levels changed: lvl 1, 2, 15, 45
+<br>-the level for next tank upgrade is written on bottom right of your screen
+<br>-hive locations are shown on the minimap
+<br>-score from bots from the top left hive has been reduced due to the high spawn rate
+<br>-rocks now spawn near the center of the dune map
+<br>-removed several bots
+<br>-changed how bots' names are written
+<br>-added dev token
+<hr>21 March 2023
+<br>-nerfed grower's growth
+<br>-nerfed some bot's spawn rate, especially rock
+<br>-commands are no longer triggered when typing in your name
+<br>-you can now press enter to join the game
+<br>-added chat with max of 3 messages each time, and character count limit of 50
+<br>-nerfed dune bots
+<hr>20 March 2023 (3)
+<br>-dune is bigger and now have 4 hives (spawning points)
+<br>-bot now have fov range of 1000
+<br>-maximum of 100 bots can spawn
+<br>-bigger jump between score and health of shapes in arena only
+<hr>20 March 2023 (2)
+<br>-added grower bot
+<hr>20 March 2023
+<br>-added bumper, mega crasher and mega bumper
+<br>-added star
+<br>-added big square, big triangle, big pentagon, big hexagon, big heptagon, collosal square
+<br>-added gem
+<br>-added "i" function
+<br>-added "p" function (passive mode: bullets and aura do not deal damage)
+<br>-notifications are now slightly translucent
+<hr>19 March 2023
+<br>-fixed spikes above capital M
+<br>-name can only have ascii characters, if contains other character, character is removed instead of entire name becoming unnamed
+<br>-changed the colors for nonagon and decagon (same colors as scenexe heptagon and tridecagon)
+<br>-added big shapes (full credits to rucketor)
+<br>-map size increased for arena to 4500
+<hr>18 March 2023
+<br>-world record info should be updated faster now
+<br>-other players and their bullets are now red instead of blue
+<br>-buffed conquerer
+<br>-added nonagon
+<br>-removed medic for now
+<br>-massive overhaul of the cavern with a texture revamp, spawning is very different and now you can find a new shape worth 2.7M!
+<hr>17 March 2023
+<br>-changed the homepage
+<br>-radiant shapes dont have white outline to aura anymore (change is more noticable in cavern)
+<br>-Nerfed Death Star.
+<br>-Added 2 minibosses, both worth 300k. The first one is called King, it is general purpose and has no special effects. The next one is called 'Wall' and has shield powers
+<br>Massively buffed the slower dune bots' damage.
+<hr>16 March 2023
+<br>-Buffed Dunes so it is worth it to grind for mobs.
+<hr>15 March 2023
+<br>-added world record button! Currently only one world record holder is displayed.
+<hr>14 March 2023
+<br>-auras no longer flash
+<br>-fixed knockback's effect on shapes
+<br>-added size growth limit at lvl 2k
+<br>-more than one person can kill a bot
+<br>-nerfed rammers
+<br>-nerfed all trap tanks
+<br>-reduced hitbox of white portal at top left of dune
+<br>-added octogon and radiant octogon in arena
+<br>-nerfed radiant spawn rates in arena
+<hr>13 March 2023 (2)
+<br>-visual changes to radiant shapes
+<br>-shapes now move in a circular motion
+<br>-decreased acceleration increment
+<br>-it's now more difficult to stay on top of a shape
+<br>-increased the flashes when objects are hit
+<br>-bullets now flash when hit
+<br>-objects now flash white and pink instead of only white when hit
+<br>-other minor visual changes
+<hr>13 March 2023
+<br>-score from shapes are now split equally among all attackers
+<br>-added radiant heptagons to cavern
+<br>-buffed swarm and assassin
+<br>-changed upgrade button color
+<br>-changed color of aura outline
+<br>-updated the color of tanks in the upgrade button
+<hr>12 March 2023
+<br>-reduced bandwidth
+<br>-added radiant heptagons
+<br>-nerfed bullet health for all tanks
+<br>-nerfed tornado's bullet range
+<br>-buffed assassin
+<br>-removed bullet penetration property
+<hr>11 March 2023 (2)
+<br>-max shapes spawning in arena is 100
+<br>-added heptagon only in arena
+<br>-radiant shapes give 3 times more score instead of 10 times more score
+<br>-changed the color of tanks
+<br>-changed the color of cavern
+<hr>11 March 2023
+<br>-fixed leaderboard bug in dune
+<br>-fixed weird shape in leaderboard when score is low
+<br>-simplified the code for leaderboard drawing
+<br>-nerfed flank and all it's upgrades including booster
+<br>-nerfed auto-mothership drone speed (20->10)
+<br>-nerfed node upgrades' body damage
+<br>-buffed medic's body damage
+<br>-tank bodies now have same outline width
+<br>-changed radiant shape outline
+<hr>10 March 2023
+<br>-score is given to everyone who dealt damage to shape
+<br>-animation for joining game is 3 times faster
+<br>-play button is now always behind the popups
+<hr>9 March 2023 (2)
+<br>-nerfed bots
+<br>-reduced radiant shape aura size
+<br>-shape outline width now increases for bigger shapes
+<hr>9 March 2023
+<br>-huge balancing, difference between tank tiers have been reduced
+<br>-reduced blizzard aura size
+<br>-tanks with aura now have faster speed
+<br>-balanced shapes
+<br>-squares a bit bigger
+<br>-decagons are a bit smaller and have less health
+<br>-boss bot now have 1 in 7500 chance of spawning instead of 10000
+<br>-cavern portal has now 1 in 5 chance instead of 1 in 10
+<br>-nerfed drone tanks and blitz
+<hr>8 March 2023 (2)
+<br>-increased acceleration
+<br>-knockback's bullet knockback for players reduced (100->50)
+<br>-nerf knockback's bullet damage (1000->300)
+<br>-nerf harbinger's bullet damage (7500->3000)
+<br>-nerf raider's aura size (4->3)
+<br>-nerf forge aura size (6->4)
+<br>-nerf foundry aura size (8->5)
+<hr>8 March 2023
+<br>-nerfed size growth per level (0.06 -> 0.04)
+<br>-decreased portal suction force
+<br>-increased portal hitbox
+<br>-changes to shape outline color (doesnt affect radiant shapes yet)
+<br>-changed background grid line color, width and distance between each line
+<br>-fixed a bug causing inaccurate score ending with 3
+<hr>7 March 2023
+<br>-arena map size now starts at 3000 instead of 1000
+<br>-shapes will push you away if you touch them
+<br>-added acceleration and deceleration
+<hr>6 March 2023
+<br>-added discord button
+<br>-changed the link of the website
+<br>-cleared most of the changelog
+<br>-first public release!
+<hr>Older entries are no longer available. The game was created in html on 28 May 2022, and changed to node.js in 12 October 2022, and released in 6 March.
