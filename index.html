@@ -1,0 +1,3120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="application-name" content="rocketer.io">
+    <meta name="description" content="Diep.io clone still a work in progress.">
+    <title>Rocketer</title>
+    <link rel="icon" type="image/x-icon" href="https://cdn.glitch.global/92cf917f-5d16-4251-8140-4f5181b6661b/favicon.png?v=1679492856483">
+    <style>
+      body{
+        user-select: none;
+      }
+      
+      #infoBox {
+        position: fixed;
+        left: 5px;
+        top: 5px;
+        font: bold 1vw Arial, sans-serif;
+        background-color: rgba(255,255,255,.5);/*rgb of white, followed by opacity that affects only background, not the words*/
+        border-radius: 10px;
+        padding: 5px 10px;
+        display: block;
+      }
+      
+      #game {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        /*Note: this height and width refers to canvas.style.height and canvas.style.width, it is not the same as canvas.width and canvas.height. Both are 100% so that html will resize the canvas to fill the whole screen.*/
+      }
+
+      #homePage {
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+      }
+
+      #continue{
+        position: fixed;
+        bottom: 15%;
+        right: 45%;
+        background-color: black;
+        border-color: black;
+        color: white;
+        border-radius: 15px;
+        height: 5%;
+        width: 10%;
+        font-size: 1.5vw;/*the words change size based on browser width*/
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+      }
+      #continue:hover{
+        background-color: white;
+        color: black;
+      }
+
+      #changelog{
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background-color: green;
+        border: 0.3vw solid limegreen;
+        color: white;
+        border-radius: 1.5vw;
+        height: 4vw;
+        width: 4vw;
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+        /*moving animation*/
+        animation-name: buttonAnimation;
+        animation-duration: 0.5s;
+      }
+      #changelog:hover{
+        background-color: limegreen;
+      }
+      @keyframes buttonAnimation {
+        from {
+          bottom: calc(10px - 8vw);
+        }
+        to {
+          bottom: 10px;
+        }
+      }
+
+      #changelogPopup{
+        display: none;
+        background-color: rgba(0,0,0,0.5);/*the three 0 represent black, 0.5 represent opacity, do not use opacity property on its own or else the words also translucent*/
+        color: white;
+        font-size: 1.5vw;
+        border-radius: 15px;
+        position: fixed;
+        top: 15%;
+        left: 25%;
+        width: 50%;
+        height: 70%;
+        font-family: Arial, sans-serif;
+        overflow-y: scroll; /*to allow scrolling if needed*/
+        padding: 1vw;
+        /*below code prevent padding from affecting width of popup*/
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+        /*moving animation*/
+        animation-name: popupAnimation;
+        animation-duration: 0.5s;
+      }
+      @keyframes popupAnimation {
+        from {
+          top: -70%;
+        }
+        to {
+          top: 15%;
+        }
+      }
+
+      #closePopup{
+        color: white;
+        position: absolute;
+        right: 1vw;
+        top: 2.5vw;
+        padding: 0.5vw;
+		    cursor: pointer;
+        border: 0.3vw solid white;
+        border-radius: 1vw;
+      }
+
+      #howToPlay{
+        position: fixed;
+        bottom: 10px;
+        right: calc(10px + 5vw);
+        background-color: purple;
+        border: 0.3vw solid magenta;
+        color: white;
+        border-radius: 1.5vw;
+        height: 4vw;
+        width: 4vw;
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+        /*moving animation*/
+        animation-name: buttonAnimation;
+        animation-duration: 0.6s;
+      }
+      #howToPlay:hover{
+        background-color: magenta;
+      }
+      
+      #settings{
+        position: fixed;
+        bottom: 10px;
+        right: calc(10px + 15vw);
+        background-color: grey;
+        border: 0.3vw solid silver;
+        color: white;
+        border-radius: 1.5vw;
+        height: 4vw;
+        width: 4vw;
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+        /*moving animation*/
+        animation-name: buttonAnimation;
+        animation-duration: 0.8s;
+      }
+      #settings:hover{
+        background-color: silver;
+      }
+
+      #settingsPopup{
+        display: none;
+        background-color: rgba(0,0,0,0.5);/*the three 0 represent black, 0.5 represent opacity, do not use opacity property on its own or else the words also translucent*/
+        color: white;
+        font-size: 1.5vw;
+        border-radius: 15px;
+        position: fixed;
+        top: 15%;
+        left: 25%;
+        width: 50%;
+        height: 70%;
+        font-family: Arial, sans-serif;
+        overflow-y: scroll; /*to allow scrolling if needed*/
+        padding: 2vw;
+        /*below code prevent padding from affecting width of popup*/
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+        text-align: center;
+        /*moving animation*/
+        animation-name: popupAnimation;
+        animation-duration: 0.5s;
+      }
+
+      #closeSettingsPopup{
+        color: white;
+        position: absolute;
+        right: 1vw;
+        top: 2.5vw;
+        padding: 0.5vw;
+		    cursor: pointer;
+        border: 0.3vw solid white;
+        border-radius: 1vw;
+      }
+
+      #accounts{
+        position: fixed;
+        bottom: 10px;
+        right: calc(10px + 10vw);
+        background-color: chocolate;
+        border: 0.3vw solid orange;
+        color: white;
+        border-radius: 1.5vw;
+        height: 4vw;
+        width: 4vw;
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+        /*moving animation*/
+        animation-name: buttonAnimation;
+        animation-duration: 0.7s;
+      }
+      #accounts:hover{
+        background-color: orange;
+      }
+
+      #accountsPopup{
+        display: none;
+        background-color: rgba(0,0,0,0.5);/*the three 0 represent black, 0.5 represent opacity, do not use opacity property on its own or else the words also translucent*/
+        color: white;
+        font-size: 1.5vw;
+        border-radius: 15px;
+        position: fixed;
+        top: 15%;
+        left: 25%;
+        width: 50%;
+        height: 70%;
+        font-family: Arial, sans-serif;
+        overflow-y: scroll; /*to allow scrolling if needed*/
+        padding: 2vw;
+        /*below code prevent padding from affecting width of popup*/
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+        /*moving animation*/
+        animation-name: popupAnimation;
+        animation-duration: 0.5s;
+      }
+
+      #closeAccountsPopup{
+        color: white;
+        position: absolute;
+        right: 1vw;
+        top: 2.5vw;
+        padding: 0.5vw;
+		    cursor: pointer;
+        border: 0.3vw solid white;
+        border-radius: 1vw;
+      }
+      
+      #accountBox{
+        color: white;
+        background-color: rgba(0,0,0,0.5);
+        position: relative;
+        margin: auto;
+        width: 95%;
+        padding: 0.5vw;
+        border-radius: 1vw;
+        text-align: center;
+        top: 20px;/*space between boxes*/
+      }
+      #wrwords{
+        color: white;
+        background-color: rgba(0,0,0,0.5);
+        position: relative;
+        margin: auto;
+        width: 95%;
+        padding: 0.5vw;
+        border-radius: 1vw;
+        text-align: center;
+      }
+
+      #discord{
+        position: fixed;
+        bottom: 10px;
+        right: calc(10px + 20vw);
+        background-color: #2a3aef;
+        border: 0.3vw solid #5865F2;
+        color: white;
+        border-radius: 1.5vw;
+        height: 4vw;
+        width: 4vw;
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+        /*moving animation*/
+        animation-name: buttonAnimation;
+        animation-duration: 0.9s;
+      }
+      #discord:hover{
+        background-color: #5865F2;
+      }
+      #reddit{
+        position: fixed;
+        bottom: 10px;
+        right: calc(10px + 25vw);
+        background-color: #d13902;
+        border: 0.3vw solid #ff5500;
+        color: white;
+        border-radius: 1.5vw;
+        height: 4vw;
+        width: 4vw;
+        font-family: Arial, sans-serif;
+        transition: 0.3s; /*transition speed for hover effect*/
+        /*moving animation*/
+        animation-name: buttonAnimation;
+        animation-duration: 1s;
+      }
+      #reddit:hover{
+        background-color: #ff5500;
+      }
+
+      #notifFlex {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      /*above is to style the notification container, below is to style the notification*/
+      .alert {
+        color: white;
+        opacity: 0.8;
+        text-align: center;
+        font-family: arial black;
+        border-radius: 15px;
+        font-size: 1.5vw;/*the words change size based on browser width*/
+        padding: 0 10px;
+        margin: 6px;
+      }
+
+      #play{
+        position: fixed;
+        top: 49.5%;
+        left: 56.5%;
+        font-size: 2.5vw;
+        padding: 0.5vw 2vw;
+        border: 0.2vw solid #000000;
+        background: lightblue;
+        border-radius: 3px;
+        font-weight: bold;
+        color: black;
+        /*Hover transition*/
+        -webkit-transition: all 0.3s ease-out;
+        -moz-transition: all 0.3s ease-out;
+        -o-transition: all 0.3s ease-out;
+        transition: all 0.3s ease-out;
+        /*moving animation*/
+        animation-name: movingplay;
+        animation-duration: 1.5s;
+      }
+      #play:hover{
+        background: white;
+        border-radius: 50px;
+      }
+      @keyframes movingplay {
+        from {
+          top: 150%;
+        }
+        to {
+          top: 49.5%;
+        }
+      }
+
+      #gamename{
+        position: fixed;
+        top: 50%;
+        left: 35%;
+        width: 18%;
+        font-size: 2vw;
+        padding: 0.5vw 0.5vw;
+        background-color: lightgrey;
+        border: 0.2vw solid #000000;
+        border-radius: 15px;
+        color: black;
+        /*moving animation*/
+        animation-name: movinginput;
+        animation-duration: 1.5s;
+      }
+      ::placeholder { /* color of the word in the name input box before typing anything */
+        color: darkgrey;
+        opacity: 1;
+      }
+      @keyframes movinginput {
+        from {
+          top: 150%;
+        }
+        to {
+          top: 50%;
+        }
+      }
+      
+      #chat{
+        position: fixed;
+        top: 45%;
+        right: 1%;
+        width: 13%;
+        font-size: 1.3vw;
+        padding: 0.3vw 0.3vw;
+        background-color: rgba(211,211,211,.5);
+        border: 0.2vw solid #000000;
+        border-radius: 0.5vw;
+        color: black;
+        display: none;
+      }
+      ::placeholder { /* color of the word in the name input box before typing anything */
+        color: darkgrey;
+        opacity: 1;
+      }
+      
+      #devtoken{
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        width: 8vw;
+        font-size: 1vw;
+        padding: 0.5vw 0.5vw;
+        background-color: lightgrey;
+        border: 0.2vw solid #000000;
+        border-radius: 15px;
+        color: black;
+      }
+      ::placeholder { /* color of the word in the name input box before typing anything */
+        color: darkgrey;
+        opacity: 1;
+      }
+      
+      /*slider in settings*/
+      .radiantsizeslider {
+        width: 90%;
+      }
+
+      .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+      }
+
+      .slider:hover {
+        opacity: 1;
+      }
+
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: dodgerblue;
+        cursor: pointer;
+      }
+
+      .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: dodgerblue;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <canvas id="homePage"></canvas>
+    <div id="infoBox"><div id="playerCount">Game information unavailable.<br>Press 'm' to close this panel.<br>Press 'i' for important game info</div><hr style="height: 0.3vw;background-color: #000000;"><div id="serverCodeTime">No server code execution time.</div><div id="clientCodeTime">No client code execution time.</div><div id="fpscounter">Checking fps...</div><div id="clientlatency">No client latency.</div><div id="serverlatency">No server latency.</div></div>
+    <button id="play" type="button" onclick="gameStart = 1;">Play</button>
+    <input type="text" id="gamename" placeholder="Player name">
+    <input type="text" id="chat" placeholder="Chat">
+    <input type="text" id="devtoken" placeholder="Insert dev token">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <button id="changelog"><span class="material-icons" style="font-size: 2.5vw; position: absolute; top: calc(50% - 1.25vw); left: calc(50% - 1.25vw);"> article </span></button>
+    <div id="changelogPopup"><div id="closePopup">X</div><div id="changelogwords">Loading...</div></div>
+    <button id="accounts"><span class="material-icons" style="font-size: 2.5vw; position: absolute; top: calc(50% - 1.25vw); left: calc(50% - 1.25vw);"> leaderboard </span></button>
+    <div id="accountsPopup"><div id="wrwords">Searching for record holder...</div><div id="accountBox">Accounts have not been added</div><div id="closeAccountsPopup">X</div></div>
+    <button id="settings"><span class="material-icons" style="font-size: 2.5vw; position: absolute; top: calc(50% - 1.25vw); left: calc(50% - 1.25vw);"> settings </span></button>
+    <div id="settingsPopup"><div class="radiantsizeslider">Radiant aura size:<span id="sizevalue"></span><input type="range" min="1" max="10" value="5" class="slider" id="radiantSizeRange"></div><br>Controls:<br>Mouse: point barrel in direction<br>W,A,S,D or arrow keys: move tank<br>E: toggle auto-fire<br>C: toggle auto-rotate<br>F: toggle 3x fast auto-rotate<br>Y: toggle upgrade tree<br>M: toggle debug<br>I: show help notification<br>P: passive mode (bullets and auras do not do damage)<br>O: open settings<div id="closeSettingsPopup">X</div></div>
+    <button id="howToPlay"><span class="material-icons" style="font-size: 2.5vw; position: absolute; top: calc(50% - 1.25vw); left: calc(50% - 1.25vw);" onclick = "window.open('https://rocketer.fandom.com/wiki/Rocketer_Wiki')"> question_mark </span></button>
+    <button id="discord"><span class="material-icons" style="font-size: 2.5vw; position: absolute; top: calc(50% - 1.25vw); left: calc(50% - 1.25vw);" onclick="window.open('https://discord.gg/bB6zNPeGh2')"> discord </span></button>
+    <button id="reddit"><span class="material-icons" style="font-size: 2.5vw; position: absolute; top: calc(50% - 1.25vw); left: calc(50% - 1.25vw);" onclick="window.open('https://www.reddit.com/r/rocketer/')"> reddit </span></button>
+    <div id="notifFlex"></div>
+    <button id="continue">Continue</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+
+      //THIS IS THE CLIENT/PLAYER CODE
+      var gameStart = 0;//gamestart variable outside so that can access in play button onclick in code above
+      var drawAreaX = 0;//these two variable placed outside so that can access in mousemove event listener
+      var drawAreaY = 0;
+      $(function () {
+        var socket = io();
+        //GAME CANVAS
+        var canvas = document.getElementById('game');
+        canvas.width = 1920;
+        canvas.height = 1080;//fixed width and height so that all users regardless of screen size will see the same thing, a bigger fixed size will result in greater field of vision for users but also clearer image on a large screen when html stretches the canvas to fit the screen (because in the css code above we made the canvas width and height as 100%)
+        //NOTE: if you change the canvas width and height, also must change in server code at the part at the end of the game loop
+        var ctx = canvas.getContext('2d');
+        //HOME PAGE CANVAS
+        //there are two canvas: one is this canvas, and the other is the game canvas
+        //the game canvas draws the game
+        //this canvas draws the home page, death screen, and other things
+         var hcanvas = document.getElementById('homePage');
+        hcanvas.width = 1920;
+        hcanvas.height = 1080;
+        var hctx = hcanvas.getContext('2d');
+
+        var continueButton = document.getElementById('continue');
+        var playButton = document.getElementById("play");
+        var nameInput = document.getElementById("gamename");
+        //when continue button clicked after player died
+        continueButton.onclick = function() {
+      	  gameStart=0;//reset canvas
+          document.getElementById('playerCount').innerHTML = "Game information unavailable.";
+          document.getElementById('clientCodeTime').innerHTML = "No client code execution time.";
+          document.getElementById('serverCodeTime').innerHTML = "No server code execution time.";
+          document.getElementById("play").style.display = "block";
+          document.getElementById("gamename").style.display = "block";
+          document.body.appendChild(changelogbutton);
+          document.body.appendChild(settingsbutton);
+          document.body.appendChild(howToPlaybutton);
+          document.body.appendChild(accountsbutton);
+          document.body.appendChild(discordbutton);
+          document.body.appendChild(tokeninput);
+          document.body.appendChild(redditbutton);
+          continueButton.remove();
+      	};
+        continueButton.remove();
+        
+        var clientID = "ERROR";
+        //this function retrieves the player id when the server sends it to the client
+        socket.on('connectWithPlayer', function(yourID){
+          clientID = yourID;//stores the id into the variable
+        });
+
+        //list of buttons outside function so that can access in mouse event listeners below function
+        //only 7 buttons here, so only can create 7 buttons max
+        var button1 = {
+          x:canvas.width+270,//poition changes when animating
+          y:canvas.height-175,
+          width:125,
+          hover:"no",
+          startx: canvas.width+270,//start position for animating button movement (start position)
+          endx: canvas.width-175,//end position
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var button2 = {
+          x:canvas.width+135,
+          y:canvas.height-175,
+          width:125,
+          hover:"no",
+          startx: canvas.width+135,//135 because button1 y minus this button's y
+          endx: canvas.width-310,
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var button3 = {
+          x:canvas.width,
+          y:canvas.height-175,
+          width:125,
+          hover:"no",
+          startx: canvas.width,
+          endx: canvas.width-445,
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var button4 = {
+          x:canvas.width+270,
+          y:canvas.height-310,
+          width:125,
+          hover:"no",
+          startx: canvas.width+270,
+          endx: canvas.width-175,
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var button5 = {
+          x:canvas.width+135,
+          y:canvas.height-310,
+          width:125,
+          hover:"no",
+          startx: canvas.width+135,
+          endx: canvas.width-310,
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var button6 = {
+          x:canvas.width,
+          y:canvas.height-310,
+          width:125,
+          hover:"no",
+          startx: canvas.width,
+          endx: canvas.width-445,
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var button7 = {
+          x:canvas.width+270,
+          y:canvas.height-445,
+          width:125,
+          hover:"no",
+          startx: canvas.width+270,
+          endx: canvas.width-175,
+          opacity: 0.5,
+          radius: 10,
+          tankRotate: 0
+        };
+        var buttonTank1 = {}
+        var buttonTank2 = {}
+        var buttonTank3 = {}
+        var buttonTank4 = {}
+        var buttonTank5 = {}
+        var buttonTank6 = {}
+        var buttonTank7 = {}
+        var prevPlayerLvl = -1;
+        var howManyButtonSentToClient = 0;
+        var howManyButtonSentToServer = 0;
+        var didAnyButtonDraw = "no";
+        var barScore = 0;//for score progress bar
+        var auraWidth = 0;//for radiant shape aura width
+        var auraWidthDirection = "increasing";
+        var clientFovMultiplier = 1;
+        var listofdeadobjects = [];//animate dead objects
+
+        function drawobjects(object,id,playerstring){//function for drawing objects on the canvas
+          if (object.type=="bullet"){
+                //draw bullet
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = object.deadOpacity;
+                }
+                var chooseflash = 3;
+                if (object.hit>0 && object.bulletType!="aura"){
+                  //if shape is hit AND bullet is not aura, choose whether it's color is white or original color to create flashing effect
+                  chooseflash = Math.floor(Math.random() * 3);//random number 0, 1 or 2
+                }
+                if (chooseflash==0){
+                  ctx.fillStyle = "white";
+                }
+                else if (chooseflash==1){
+                  ctx.fillStyle = "pink";
+                }
+                else{
+                  if (object.ownsIt=="yes"||object.bulletType=="aura"){//if it's an aura or client's tank owns the bullet
+                    ctx.fillStyle = object.color;
+                  }
+                  else{
+                    ctx.fillStyle = "#f04f54";
+                  }
+                }
+                if (object.passive=="yes"){
+                  if (object.bulletType=="aura"){
+                    ctx.fillStyle = "rgba(128,128,128,.5)";
+                  }
+                  else{
+                    ctx.fillStyle = "grey";
+                  }
+                }
+                
+                if (object.ownsIt=="yes"||object.bulletType=="aura"){//if it's an aura or client's tank owns the bullet
+                  ctx.strokeStyle = object.outline;
+                }
+                else{
+                  ctx.strokeStyle = "#b33b3f";
+                }
+                if (object.passive=="yes"){
+                  ctx.strokeStyle = "dimgrey";
+                }
+                
+                ctx.lineWidth = 5;
+                if (object.bulletType=="bullet"||object.bulletType=="aura"){
+                  ctx.beginPath();
+                  ctx.arc(object.x+drawAreaX, object.y+drawAreaY, object.width, 0, 2 * Math.PI);
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else if (object.bulletType=="trap"){
+                  //width is the radius, so need to times two to get total width
+                  //note: x and y of object are the center of object, but when drawing rectangles, the x and y coordinates given need to be the top left corner of the rectangle, so need to minus the width and height
+                  ctx.fillRect(object.x+drawAreaX-object.width, object.y+drawAreaY-object.width, object.width*2, object.width*2);
+                  ctx.strokeRect(object.x+drawAreaX-object.width, object.y+drawAreaY-object.width, object.width*2, object.width*2);
+                }
+                else if (object.bulletType=="drone"){
+                  ctx.beginPath();
+                  ctx.moveTo(object.x + drawAreaX + object.width * Math.cos(0), object.y + drawAreaY + object.width * Math.sin(0));
+                  for (var i = 1; i <= 3; i += 1) {
+                    ctx.lineTo(object.x + drawAreaX + object.width * Math.cos(i * 2 * Math.PI / 3), object.y + drawAreaY + object.width * Math.sin(i * 2 * Math.PI / 3));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = 1.0;//reset opacity
+                }
+              }
+              else if (object.type=="bot"){//draw bot
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = object.deadOpacity;
+                }
+                var chooseflash = 3;
+                if (object.hit>0){
+                  //if shape is hit, choose whether it's color is white or original color to create flashing effect
+                  chooseflash = Math.floor(Math.random() * 3);//random number 0, 1 or 2
+                }
+                if (chooseflash==0){
+                  ctx.fillStyle = "white";
+                }
+                else if (chooseflash==1){
+                  ctx.fillStyle = "pink";
+                }
+                else{
+                  ctx.fillStyle = object.color;
+                }
+                ctx.strokeStyle = object.outline;
+                ctx.lineWidth = 5;
+                ctx.beginPath();
+                ctx.arc(object.x+drawAreaX, object.y+drawAreaY, object.width, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                if (object.health<object.maxhealth){
+                  //draw health bar background
+                  var w = object.width*2;
+                  var h = 10;
+                  if (r>w/2){//prevent weird shape when very little health
+                    r=w/2;
+                  }
+                  else{
+                    r = h/2;
+                  }
+                  var x = object.x-object.width+drawAreaX;
+                  var y = object.y+object.width+10+drawAreaY;
+                  ctx.fillStyle = "black";
+                  ctx.strokeStyle = "black";
+                  ctx.lineWidth = 3;
+                  ctx.beginPath();
+                  ctx.moveTo(x+r, y);
+                  ctx.arcTo(x+w, y,   x+w, y+h, r);
+                  ctx.arcTo(x+w, y+h, x,   y+h, r);
+                  ctx.arcTo(x,   y+h, x,   y,   r);
+                  ctx.arcTo(x,   y,   x+w, y,   r);
+                  ctx.closePath();
+                  ctx.fill();
+                  ctx.stroke();
+                  //draw health bar
+                  w = w/object.maxhealth*object.health;
+                  ctx.fillStyle = object.color;
+                  ctx.beginPath();
+                  ctx.moveTo(x+r, y);
+                  ctx.arcTo(x+w, y,   x+w, y+h, r);
+                  ctx.arcTo(x+w, y+h, x,   y+h, r);
+                  ctx.arcTo(x,   y+h, x,   y,   r);
+                  ctx.arcTo(x,   y,   x+w, y,   r);
+                  ctx.closePath();
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 5;
+                ctx.font = "bold 20px Arial";
+                ctx.textAlign = "center";
+                ctx.lineJoin = 'round';//prevent spikes above the capital letter "M"
+                //note: if you stroke then fill, the words will be thicker and nicer. If you fill then stroke, the words are thinner.
+                if (object.specialty!=""){
+                  var specialtyText = " (" + object.specialty + ")";
+                }
+                else{
+                  var specialtyText = "";
+                }
+                ctx.strokeText(object.name + specialtyText, object.x+drawAreaX, object.y+drawAreaY-object.width-10);
+                ctx.fillText(object.name + specialtyText, object.x+drawAreaX, object.y+drawAreaY-object.width-10);
+                ctx.lineJoin = 'miter';//prevent spikes above the capital letter "M"
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = 1.0;//reset opacity
+                }
+              }
+              else if (object.type=="shape"){
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = object.deadOpacity;
+                }
+                var radiantAuraSize = document.getElementById("sizevalue").innerHTML;//aura size determined by settings, but default is 5
+                //draw shape
+                ctx.save()
+                ctx.translate(object.x+drawAreaX, object.y+drawAreaY);
+                ctx.rotate(object.angle * Math.PI / 180);
+                var chooseflash = 3;
+                if (object.hit>0){
+                  //if shape is hit, choose whether it's color is white or original color to create flashing effect
+                  chooseflash = Math.floor(Math.random() * 3);//random number 0, 1 or 2
+                }
+                if (object.hasOwnProperty('red')){
+                  //if shape is radiant
+                  //create gradient
+                  const gradient = ctx.createRadialGradient(0, 0, object.width, 0, 0, object.width*radiantAuraSize);
+                  gradient.addColorStop(0, 'rgba(' + object.red + ', ' + object.green + ', ' + object.blue + ', 0.3)');
+                  gradient.addColorStop(0.5, 'rgba(' + object.red + ', ' + object.green + ', ' + object.blue + ', 0.1)');
+                  gradient.addColorStop(1, 'rgba(' + object.red + ', ' + object.green + ', ' + object.blue + ', 0.0)');
+                  ctx.fillStyle = gradient;
+                  ctx.beginPath();
+                  /*
+                  //old code where aura have shape
+                  ctx.moveTo(object.x + drawAreaX + object.width*5 * Math.cos(0), object.y + drawAreaY + object.width*5 * Math.sin(0));
+                  for (var i = 1; i <= object.sides; i += 1) {
+                    ctx.lineTo(object.x + drawAreaX + object.width*5 * Math.cos(i * 2 * Math.PI / object.sides), object.y + drawAreaY + object.width*5 * Math.sin(i * 2 * Math.PI / object.sides));
+                  }
+                  */
+                  ctx.arc(0, 0, object.width*radiantAuraSize, 0, 2 * Math.PI);
+                  ctx.fill();
+                  var shadeFactor = 3/4;//smaller the value, darker the shade
+                  ctx.strokeStyle = 'rgb(' + object.red*shadeFactor + ', ' + object.green*shadeFactor + ', ' + object.blue*shadeFactor + ')';
+                  ctx.fillStyle = 'rgb(' + object.red + ', ' + object.green + ', ' + object.blue + ')';
+                }
+                else{
+                  //if not radiant
+                  ctx.fillStyle = object.color;
+                  ctx.strokeStyle = object.outline;
+                }
+                //if chooseflash is 0, flash white, if 1 or 2, shape is hit but normal color, if 3 means shape not hit
+                if (chooseflash==0){
+                  ctx.fillStyle = "white";
+                }
+                else if (chooseflash==1){
+                  ctx.fillStyle = "pink";
+                }
+                ctx.rotate(object.angle * Math.PI / 180);//rotate
+                if (object.sides=="star"){//draw a star
+                  
+                  var numberOfSpikes = 5;
+                  var outerRadius = object.width;
+                  var innerRadius = object.width/3*2;
+                  
+                  var rot = Math.PI/2*3;
+                  var x = 0;
+                  var y = 0;
+
+                  ctx.beginPath();
+                  ctx.moveTo(0, 0-outerRadius)
+                  for(i=0;i<numberOfSpikes;i++){
+                    x = 0 + Math.cos(rot)*outerRadius;
+                    y = 0 + Math.sin(rot)*outerRadius;
+                    ctx.lineTo(x,y)
+                    rot+=(Math.PI/numberOfSpikes)
+                    x = 0+Math.cos(rot)*innerRadius;
+                    y = 0+Math.sin(rot)*innerRadius;
+                    ctx.lineTo(x,y)
+                    rot+=(Math.PI/numberOfSpikes)
+                  }
+                  ctx.lineTo(0,0-outerRadius);
+                  ctx.closePath();
+                  ctx.lineWidth = 5;
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else{
+                  ctx.lineWidth = 5;
+                  ctx.beginPath();
+                  ctx.moveTo(0 + object.width * Math.cos(0), 0 + object.width * Math.sin(0));
+                  for (var i = 1; i <= (object.sides+1); i += 1) {
+                    ctx.lineTo(0 + object.width * Math.cos(i * 2 * Math.PI / object.sides), 0 + object.width * Math.sin(i * 2 * Math.PI / object.sides));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                ctx.restore();//must restore to reset angle rotation so health bar wont be rotated sideways
+                //draw shape's health bar
+                if (object.health<object.maxhealth){
+                  //draw health bar background
+                  var w = object.width*2;
+                  var h = 10;
+                  var r = h/2;
+                  if (r>w/2){//prevent weird shape when very little health
+                    r=w/2;
+                  }
+                  else{
+                    r = h/2;
+                  }
+                  var x = object.x-object.width+drawAreaX;
+                  var y = object.y+object.width+10+drawAreaY;
+                  ctx.fillStyle = "black";
+                  ctx.strokeStyle = "black";
+                  ctx.lineWidth = 3;
+                  ctx.beginPath();
+                  ctx.moveTo(x+r, y);
+                  ctx.arcTo(x+w, y,   x+w, y+h, r);
+                  ctx.arcTo(x+w, y+h, x,   y+h, r);
+                  ctx.arcTo(x,   y+h, x,   y,   r);
+                  ctx.arcTo(x,   y,   x+w, y,   r);
+                  ctx.closePath();
+                  ctx.fill();
+                  ctx.stroke();
+                  //draw health bar
+                  if(object.health>=0){//dont draw health bar if negative health
+                    w = w/object.maxhealth*object.health;
+                    if (object.hasOwnProperty('red')){
+                      //if shape is radiant
+                      ctx.fillStyle = 'rgb(' + object.red + ', ' + object.green + ', ' + object.blue + ')';
+                    }
+                    else{
+                      ctx.fillStyle = object.color;
+                    }
+                    ctx.beginPath();
+                    ctx.moveTo(x+r, y);
+                    ctx.arcTo(x+w, y,   x+w, y+h, r);
+                    ctx.arcTo(x+w, y+h, x,   y+h, r);
+                    ctx.arcTo(x,   y+h, x,   y,   r);
+                    ctx.arcTo(x,   y,   x+w, y,   r);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                }
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = 1.0;//reset opacity
+                }
+              }
+              else if (object.type=="player"){
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = object.deadOpacity;
+                }
+                //draw players
+                ctx.save();//save so later can restore
+                //translate canvas to location of player so that the player is at 0,0 coordinates, allowing rotation around the center of player's body
+                ctx.translate(object.x+drawAreaX, object.y+drawAreaY);
+                ctx.rotate(object.angle);
+                
+                //draw assets, e.g. rammer body base
+                Object.keys(object.assets).forEach((assetID) => {
+                  var asset = object.assets[assetID]
+                  console.log(asset.size)
+                  ctx.fillStyle = asset.color;
+                  ctx.strokeStyle = asset.outline;
+                  ctx.lineWidth = asset.outlineThickness;
+                  if (asset.sides==0){
+                    ctx.beginPath();
+                    ctx.arc(0, 0, object.width*asset.size, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                  else{
+                    ctx.beginPath();
+                    var baseSides = asset.sides;
+                    ctx.moveTo(0 + object.width*asset.size * Math.cos(0), 0 + object.width*asset.size * Math.sin(0));
+                    for (var i = 1; i <= baseSides; i += 1) {
+                      ctx.lineTo(0 + object.width*asset.size * Math.cos(i * 2 * Math.PI / baseSides), 0 + object.width*asset.size * Math.sin(i * 2 * Math.PI / baseSides));
+                    }
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                })
+                
+                //draw barrel
+                ctx.lineWidth = 5;
+                Object.keys(object.barrels).forEach((barrel) => {
+                  //note that you must use [barrel] instead of .barrel, if not there will be an error
+                  let thisBarrel = object.barrels[barrel];
+                  ctx.rotate(thisBarrel.additionalAngle  * Math.PI / 180);//rotate to barrel angle
+                  ctx.fillStyle = object.barrelColor;
+                  ctx.strokeStyle = object.barrelOutline;
+                  //bullet barrel
+                  //note: barrelHeightChange refers to reduction in barrel height for barrel animation when shooting
+                  //(thisBarrel.barrelHeight-object.barrelHeightChange)
+                  if (thisBarrel.barrelType == "bullet"){
+                    ctx.fillRect(-thisBarrel.barrelWidth/2+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange), thisBarrel.barrelWidth, (thisBarrel.barrelHeight-thisBarrel.barrelHeightChange));
+                    ctx.strokeRect(-thisBarrel.barrelWidth/2+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange), thisBarrel.barrelWidth, (thisBarrel.barrelHeight-thisBarrel.barrelHeightChange));
+                  }
+                    //drone barrel
+                  else if (thisBarrel.barrelType == "drone"){
+                    ctx.beginPath();
+                    ctx.moveTo(-thisBarrel.barrelWidth/2+thisBarrel.x,0);
+                    ctx.lineTo(-thisBarrel.barrelWidth+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange));
+                    ctx.lineTo(thisBarrel.barrelWidth+thisBarrel.x*2, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange));
+                    ctx.lineTo(thisBarrel.barrelWidth/2+thisBarrel.x*2,0);
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                    //trap barrel
+                  else if (thisBarrel.barrelType == "trap"){
+                    ctx.fillRect(-thisBarrel.barrelWidth/2+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange)/3*2, thisBarrel.barrelWidth, (thisBarrel.barrelHeight-thisBarrel.barrelHeightChange)/3*2);
+                    ctx.strokeRect(-thisBarrel.barrelWidth/2+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange)/3*2, thisBarrel.barrelWidth, (thisBarrel.barrelHeight-thisBarrel.barrelHeightChange)/3*2);
+                    ctx.beginPath();
+                    ctx.moveTo(-thisBarrel.barrelWidth/2+thisBarrel.x,-(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange)/3*2);
+                    ctx.lineTo(-thisBarrel.barrelWidth+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange));
+                    ctx.lineTo(thisBarrel.barrelWidth+thisBarrel.x, -(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange));
+                    ctx.lineTo(thisBarrel.barrelWidth/2+thisBarrel.x,-(thisBarrel.barrelHeight-thisBarrel.barrelHeightChange)/3*2);
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                  ctx.rotate(-thisBarrel.additionalAngle  * Math.PI / 180);//rotate back
+                })
+                
+                //draw body
+                var chooseflash = 3;
+                if (object.hit>0){
+                  //if shape is hit, choose whether it's color is white or original color to create flashing effect
+                  chooseflash = Math.floor(Math.random() * 3);//random number 0, 1 or 2
+                }
+                if (chooseflash==0){
+                  ctx.fillStyle = "white";
+                }
+                else if (chooseflash==1){
+                  ctx.fillStyle = "pink";
+                }
+                else{
+                  if (id==playerstring){//if this player is the tank that the client is controlling
+                    ctx.fillStyle = object.color;
+                  }
+                  else{
+                    ctx.fillStyle = "#f04f54";
+                  }
+                }
+                if (id==playerstring){
+                  ctx.strokeStyle = object.outline;
+                }
+                else{
+                  ctx.strokeStyle = "#b33b3f";
+                }
+                if (object.developer=="yes"){//if a developer
+                  ctx.fillStyle = "green";
+                  ctx.strokeStyle = "black";
+                }
+                if (object.tankType!="chaos"&&object.tankType!="bunker"&&object.tankType!="hailstorm"&&object.tankType!="bombshell"&&object.tankType!="oven"&&object.tankType!="pounder"){//not a tier 6 tank
+                  ctx.beginPath();
+                  ctx.arc(0, 0, object.width, 0, 2 * Math.PI);
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else{//if a tier 6 tank
+                  ctx.fillStyle = "#934c93";
+                  ctx.strokeStyle = "#660066";
+                  ctx.beginPath();
+                  var baseSides = 6;
+                  ctx.moveTo(0 + object.width * Math.cos(0), 0 + object.width * Math.sin(0));
+                  for (var i = 1; i <= baseSides; i += 1) {
+                    ctx.lineTo(0 + object.width * Math.cos(i * 2 * Math.PI / baseSides), 0 + object.width * Math.sin(i * 2 * Math.PI / baseSides));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                
+                ctx.restore();//restore coordinates to saved
+                //write player name
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 5;
+                ctx.font = "bold 30px Arial";
+                ctx.textAlign = "center";
+                ctx.lineJoin = 'round';//prevent spikes above the capital letter "M"
+                //note: if you stroke then fill, the words will be thicker and nicer. If you fill then stroke, the words are thinner.
+                ctx.strokeText(object.name, object.x+drawAreaX, object.y+drawAreaY-object.width-40);
+                ctx.fillText(object.name, object.x+drawAreaX, object.y+drawAreaY-object.width-40);
+                //write player level
+                ctx.font = "bold 25px Arial";
+                ctx.strokeText("Lvl " + object.level + " " + object.tankType, object.x+drawAreaX, object.y+drawAreaY-object.width-10);
+                ctx.fillText("Lvl " + object.level + " " + object.tankType, object.x+drawAreaX, object.y+drawAreaY-object.width-10);
+                ctx.lineJoin = 'miter';//change it back
+                //draw player health
+                if (object.health<object.maxhealth){
+                  //draw health bar background
+                  var w = object.width*2;
+                  var h = 10;
+                  if (r>w/2){//prevent weird shape when very little health
+                    r=w/2;
+                  }
+                  else{
+                    r = h/2;
+                  }
+                  var x = object.x-object.width+drawAreaX;
+                  var y = object.y+object.width+10+drawAreaY;
+                  ctx.fillStyle = "black";
+                  ctx.strokeStyle = "black";
+                  ctx.lineWidth = 3;
+                  ctx.beginPath();
+                  ctx.moveTo(x+r, y);
+                  ctx.arcTo(x+w, y,   x+w, y+h, r);
+                  ctx.arcTo(x+w, y+h, x,   y+h, r);
+                  ctx.arcTo(x,   y+h, x,   y,   r);
+                  ctx.arcTo(x,   y,   x+w, y,   r);
+                  ctx.closePath();
+                  ctx.fill();
+                  ctx.stroke();
+                  //draw health bar
+                  w = w/object.maxhealth*object.health;
+                  if (id==playerstring){//if this player is the tank that the client is controlling
+                    ctx.fillStyle = object.color;
+                  }
+                  else{
+                    ctx.fillStyle = "#f04f54";
+                  }
+                  ctx.beginPath();
+                  ctx.moveTo(x+r, y);
+                  ctx.arcTo(x+w, y,   x+w, y+h, r);
+                  ctx.arcTo(x+w, y+h, x,   y+h, r);
+                  ctx.arcTo(x,   y+h, x,   y,   r);
+                  ctx.arcTo(x,   y,   x+w, y,   r);
+                  ctx.closePath();
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                
+                //write chats
+                var firstChatY = 110
+                object.chats.forEach((chatObj) => {
+                  ctx.fillStyle = "rgba(128,128,128,.7)";
+                  ctx.strokeStyle = "black";
+                  ctx.lineWidth = 5;
+                  ctx.font = "bold 25px Arial";
+                  ctx.textAlign = "center";
+                  ctx.lineJoin = 'round';//prevent spikes above the capital letter "M"
+                  //draw rect
+                  var textWidth = ctx.measureText(chatObj.chat).width;//get width of text
+                  var xpadding = 25;
+                  var ypadding = 10;
+                  var w = textWidth+xpadding*2;
+                  var h = 25+ypadding*2;
+                  var r = h/3;//radius is one third of height
+                  var x = object.x+drawAreaX-textWidth/2-xpadding;
+                  var y = object.y+drawAreaY-firstChatY-ypadding-20;
+                  ctx.beginPath();
+                  ctx.moveTo(x+r, y);
+                  ctx.arcTo(x+w, y,   x+w, y+h, r);
+                  ctx.arcTo(x+w, y+h, x,   y+h, r);
+                  ctx.arcTo(x,   y+h, x,   y,   r);
+                  ctx.arcTo(x,   y,   x+w, y,   r);
+                  ctx.closePath();
+                  ctx.fill();
+                  //write words
+                  ctx.fillStyle = "white";
+                  ctx.strokeText(chatObj.chat, object.x+drawAreaX, object.y+drawAreaY-firstChatY);
+                  ctx.fillText(chatObj.chat, object.x+drawAreaX, object.y+drawAreaY-firstChatY);
+                  ctx.lineJoin = 'miter';//change it back
+                  firstChatY+=50;//difference between chat's y position
+                })
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = 1.0;//reset opacity
+                }
+              }
+              else if (object.type=="portal"){
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = object.deadOpacity;
+                }
+                //drawing portals
+                //create gradient
+                const gradient = ctx.createRadialGradient(object.x+drawAreaX, object.y+drawAreaY, object.width/3, object.x+drawAreaX, object.y+drawAreaY, object.width);
+
+                // Add two color stops
+                //caluclate color of outline of portal based on time until it die
+                var portalColorCalc = object.timer/object.maxtimer
+                var portalColor = 255 - portalColorCalc * 255
+                var portalRGB = 'rgb(' + portalColor + ',' + portalColor + ',' + portalColor + ')'
+                if (object.hasOwnProperty('red')){
+                  //if portal is radiant
+                  var portalInnerColor = 'rgb(' + object.red + ', ' + object.green + ', ' + object.blue + ')';
+                }
+                else{
+                  var portalInnerColor = object.color;
+                }
+                gradient.addColorStop(0, portalInnerColor);
+                gradient.addColorStop(1, portalRGB);
+                
+                // Set the fill style and draw a rectangle
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(object.x+drawAreaX, object.y+drawAreaY, object.width, 0, 2 * Math.PI);
+                ctx.fill();
+                if (object.hasOwnProperty('deadOpacity')){//if this is an animation of a dead object
+                  ctx.globalAlpha = 1.0;//reset opacity
+                }
+              }
+              else if (object.type=="Fixedportal"){
+                //drawing rectangular fixed portals, e.g. the portal at top left corner of dune
+                ctx.save();//save so later can restore
+                ctx.translate(object.x+drawAreaX, object.y+drawAreaY);//translate so white portal is at 0,0 coordinates so can rotate around center of portal
+                ctx.rotate(object.angleDegrees * Math.PI / 180);//rotate portal
+                ctx.fillStyle = object.color;
+                ctx.fillRect(-object.width/2, -object.height/2, object.width, object.height);
+                ctx.globalAlpha = 0.7;//transparency
+                ctx.fillStyle = object.outline;
+                ctx.fillRect(-object.width, -object.height, object.width*2, object.height*2);
+                ctx.globalAlpha = 1.0;//reset transparency
+                ctx.restore()//restore after translating
+              }
+        }
+        
+        //these functions are for server to send stuff to client
+        socket.on('gameStateUpdate', function(gameAreaSize, objectstring, serverCodeTime, playerstring, playerCount, shapeCount, portalstring, gamelocation, shakeYN, playerslist, deadobjects){
+          listofdeadobjects = [...listofdeadobjects,...deadobjects]//add new dead objects to current list
+          
+          //parse the strings back into objects. they were changed to strings in the server code to reduce bandwidth
+          const objects = JSON.parse(objectstring)
+          const portals = JSON.parse(portalstring)
+          const players = JSON.parse(playerslist)
+          const player = objects[playerstring]//refers to the client's tank
+          //change field of vision
+          canvas.width=player.fovMultiplier*1920;
+          canvas.height=player.fovMultiplier*1080;
+          //change client's record of fov
+          clientFovMultiplier =  player.fovMultiplier
+
+          //change radiant shape aura width
+          if (auraWidth>=3){
+            auraWidthDirection = "decreasing"
+          }
+          else if (auraWidth<=2){
+            auraWidthDirection = "increasing"
+          }
+          if (auraWidthDirection=="increasing"){
+            auraWidth+=0.05;
+          }
+          else if (auraWidthDirection=="decreasing"){
+            auraWidth-=0.05;
+          }
+
+          var starting = Date.now()//start client code execution timer
+            ctx.clearRect(0, 0, canvas.width, canvas.height);//clear screen so can redraw
+            //shake canvas if touch portal
+            if (shakeYN=="yes"){
+              ctx.save();
+              var dx = Math.random() * 20 - 10;
+              var dy = Math.random() * 20 - 10;
+              //-10 at the end so that the chosen number has a range of between -10 and 10
+              ctx.translate(dx, dy);
+            }
+            //code below changes the information in the playercount div
+            document.getElementById('playerCount').innerHTML = "Player count: " + playerCount + "<br>Your game id: " + clientID + "<br>Current Map Size: " + gameAreaSize + "<br>Shape/Bot count: " + shapeCount + "<br>Objects drawn on screen: " + Object.keys(objects).length + "<br>Location: " + gamelocation
+          //change color of server code execution time
+          if (serverCodeTime<5){
+            document.getElementById('serverCodeTime').style.color = "black"
+          }
+          else if (serverCodeTime<10){
+            document.getElementById('serverCodeTime').style.color = "orange"
+          }
+          else{
+            document.getElementById('serverCodeTime').style.color = "red"
+          }
+          document.getElementById('serverCodeTime').innerHTML = "Server code execution time: " + serverCodeTime + "ms"
+            //note: <br> refers to a new line, <hr> refers to a horizontal line
+            //the canvas is the whole screen
+
+            //now we are drawing the game area
+            if (clientID!="ERROR"){//checks if server has already sent player's id to client
+              drawAreaX = canvas.width/2 - player.x;
+              drawAreaY = canvas.height/2 - player.y;
+              //COLOR OF AREA OUTSIDE PLAYABLE AREA
+            }
+            if (gamelocation=="dune"){//dune background
+              ctx.fillStyle = "#fcf5ae";
+            }
+            else if (gamelocation=="cavern"){//cavern background
+              ctx.fillStyle = "#000000";
+            }
+            else {//arena background
+              ctx.fillStyle = "#d3d3d3";
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);//drawing background
+          //COLOR OF PLAYABLE AREA
+            if (gamelocation=="dune"){//dune background
+              ctx.fillStyle = "#fffacd";
+            }
+            else if (gamelocation=="cavern"){//cavern background
+              ctx.fillStyle = "#040021";
+            }
+            else {//arena background
+              ctx.fillStyle = "#e5e4e2";
+            }
+            ctx.fillRect(drawAreaX, drawAreaY, gameAreaSize, gameAreaSize);//drawing area
+            //drawin grid lines
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            if (gamelocation=="dune"){//dune grid color
+              ctx.strokeStyle = "#cfaa32";
+            }
+            else if (gamelocation=="cavern"){//cavern grid color
+              ctx.strokeStyle = "#1d1942";
+            }
+            else {//arena grid color
+              ctx.strokeStyle = "#a9a9a9";
+            }
+            var gridHeight = 65;
+            //How does drawing the grid lines work: the equation below is to calculate the negative of the closest number to drawAreaX that is divisible by gridHeight, with drawAreaX referring to the distance from left side of screen to arena, and gridHeight is distance between lines drawn. By calculating this, we can find out the position to start drawing the first line on the left side of the screen, producing the effect of the grid moving in the opposite direction of the user. Need to be opposite, that's why negative in equation. Because the lines are drawn relative to the left and top of arena, that's why the lines are always drawn exactly on the left and top of arena on screen, unless people disconnect or connect, resulting in change og arena size.
+            //for x: -gridHeight-(-drawAreaX%gridHeight)
+            //for y: -gridHeight-(-drawAreaY%gridHeight)
+            for(let x = -gridHeight-(-drawAreaX%gridHeight); x < canvas.width; x += gridHeight){
+              ctx.moveTo(x, 0)
+              ctx.lineTo(x, canvas.height)
+            }
+            for(let y = -gridHeight-(-drawAreaY%gridHeight); y < canvas.height; y += gridHeight){
+              ctx.moveTo(0, y)
+              ctx.lineTo(canvas.width, y)
+            }
+            ctx.stroke();
+            //drawing the objects that are sent from the server, order of drawings are already changed by the server, so if you want something to be below another thing, change the order of adding to the object list in the server code, not the client code
+            Object.keys(objects).forEach((id) => {//alive object list
+              var thisobject = objects[id]
+              drawobjects(thisobject,id,playerstring);//draw the objects on the canvas
+            })
+            listofdeadobjects.forEach((object) => {//dead object array
+              if (object.bulletType!="aura"){
+                if (object.type=="bullet"){//check if bullet belongs to player. usually server does this, but not for dead objects
+                  if (object.ownerId==clientID){
+                    object.ownsIt = "yes";
+                  }
+                }
+                if (object.hasOwnProperty("deadanimation")){
+                  object.deadanimation--;//animate object
+                  object.width+=5;
+                  if (object.deadOpacity>0){
+                    object.deadOpacity-=0.2;
+                  }
+                  if(object.deadOpacity<0){
+                    object.deadOpacity = 0;
+                  }
+                  if (object.deadanimation<0){
+                    //remove object from array
+                    var index = listofdeadobjects.indexOf(object);
+                    if (index > -1) { // only splice array when item is found
+                      listofdeadobjects.splice(index, 1); // 2nd parameter means remove one item only
+                    }
+                  }
+                }
+                else{
+                  object.deadanimation = 5;//duration of dead animation
+                  object.deadOpacity = 1;
+                }
+                drawobjects(object,object.id,playerstring);//draw the objects on the canvas
+              }
+            })
+            //draw hive if in dune
+            if (gamelocation=="dune"){
+              //draw 4 hives: triangle with 200px width and another smaller triangle with 50px width
+              //first hive
+              var xpos = 1500;
+              var ypos = 1500;
+              //shadow
+              ctx.shadowColor = "black";
+              ctx.shadowBlur = 100;
+              ctx.fillStyle = "#42382C";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 200 * Math.cos(0), ypos + drawAreaY + 200 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 200 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 200 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              ctx.shadowColor='rgba(0,0,0,0)';//reset shadow to none
+              ctx.fillStyle = "#FF8C00";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 50 * Math.cos(0), ypos + drawAreaY + 50 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 50 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 50 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              //second hive
+              var xpos = 1500;
+              var ypos = 4500;
+              //shadow
+              ctx.shadowColor = "black";
+              ctx.shadowBlur = 100;
+              ctx.fillStyle = "#42382C";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 200 * Math.cos(0), ypos + drawAreaY + 200 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 200 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 200 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              ctx.shadowColor='rgba(0,0,0,0)';//reset shadow to none
+              ctx.fillStyle = "#FF8C00";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 50 * Math.cos(0), ypos + drawAreaY + 50 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 50 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 50 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              //third hive
+              var xpos = 4500;
+              var ypos = 1500;
+              //shadow
+              ctx.shadowColor = "black";
+              ctx.shadowBlur = 100;
+              ctx.fillStyle = "#42382C";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 200 * Math.cos(0), ypos + drawAreaY + 200 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 200 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 200 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              ctx.shadowColor='rgba(0,0,0,0)';//reset shadow to none
+              ctx.fillStyle = "#FF8C00";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 50 * Math.cos(0), ypos + drawAreaY + 50 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 50 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 50 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              //fourth hive
+              var xpos = 4500;
+              var ypos = 4500;
+              //shadow
+              ctx.shadowColor = "black";
+              ctx.shadowBlur = 100;
+              ctx.fillStyle = "#42382C";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 200 * Math.cos(0), ypos + drawAreaY + 200 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 200 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 200 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+              ctx.shadowColor='rgba(0,0,0,0)';//reset shadow to none
+              ctx.fillStyle = "#FF8C00";
+              ctx.beginPath();
+              ctx.moveTo(xpos + drawAreaX + 50 * Math.cos(0), ypos + drawAreaY + 50 * Math.sin(0));
+              for (var i = 1; i <= 3; i += 1) {
+                ctx.lineTo(xpos + drawAreaX + 50 * Math.cos(i * 2 * Math.PI / 3), ypos + drawAreaY + 50 * Math.sin(i * 2 * Math.PI / 3));
+              }
+              ctx.fill();
+            }
+
+            if (shakeYN=="yes"){
+              ctx.restore();
+            }
+            
+            //drawing upgrade buttons
+            function buttondraw(buttonNumber, one, two, three, four, five, six, seven){
+              //eval changes string to code, so if buttonNumber is 1, the code below says:
+                //button1.hover=="yes"
+                //toString changes the number to a string to be used to form the variable name
+                eval("button"+buttonNumber.toString()).tankRotate += 1;//make tank in upgrade button rotate
+                if (eval("button"+buttonNumber.toString()).hover=="yes"){
+                  if (eval("button"+buttonNumber.toString()).opacity<1){//increase opacity when hovering over upgrade button if opacity less than 1
+                    eval("button"+buttonNumber.toString()).opacity+=0.1;
+                  }
+                  else{
+                    eval("button"+buttonNumber.toString()).opacity = 1;
+                  }
+                  if (eval("button"+buttonNumber.toString()).radius<30){
+                    eval("button"+buttonNumber.toString()).radius+=4;
+                  }
+                  else{
+                    eval("button"+buttonNumber.toString()).radius = 30;
+                  }
+                }
+                else{
+
+                  if (eval("button"+buttonNumber.toString()).opacity>0.5){//decrease opacity when hovering over upgrade button if opacity more than 0.5
+                    eval("button"+buttonNumber.toString()).opacity-=0.1;
+                  }
+                  else{
+                    eval("button"+buttonNumber.toString()).opacity = 0.5;
+                  }
+                  if (eval("button"+buttonNumber.toString()).radius>10){
+                    eval("button"+buttonNumber.toString()).radius-=4;
+                  }
+                  else{
+                    eval("button"+buttonNumber.toString()).radius = 10;
+                  }
+                }
+                //check if button is animating
+                if (eval("button"+buttonNumber.toString()+".x")>eval("button"+buttonNumber.toString()+".endx")){
+                  eval("button"+buttonNumber.toString()+".x-=(button"+buttonNumber.toString()+".x-button"+buttonNumber.toString()+".endx)/10");//animating the button with a speed of distStillNeedToMove/10
+                }
+                else if (eval("(button"+buttonNumber.toString()+".x-button"+buttonNumber.toString()+".endx)<1")){
+                  eval("button"+buttonNumber.toString()+".x=button"+buttonNumber.toString()+".endx");//if distance between current position and actual position is less than 1
+                }
+                else if (eval("button"+buttonNumber.toString()+".x")<eval("button"+buttonNumber.toString()+".endx")){
+                  eval("button"+buttonNumber.toString()+".x=button"+buttonNumber.toString()+".endx");//if button somehow overshot
+                }
+                ctx.strokeStyle = 'black';
+                ctx.fillStyle = 'rgba(135, 206, 250, ' + eval("button"+buttonNumber.toString()).opacity + ')';
+                ctx.lineWidth = 3*player.fovMultiplier;
+              //draw button
+                var w = eval("button"+buttonNumber.toString()+".width") * player.fovMultiplier;
+                var h = eval("button"+buttonNumber.toString()+".width") * player.fovMultiplier;
+                var r = eval("button"+buttonNumber.toString()).radius;
+                var x = eval("button"+buttonNumber.toString()+".x") * player.fovMultiplier;
+                var y = eval("button"+buttonNumber.toString()+".y") * player.fovMultiplier;
+                ctx.beginPath();
+                ctx.moveTo(x+r, y);
+                ctx.arcTo(x+w, y,   x+w, y+h, r);
+                ctx.arcTo(x+w, y+h, x,   y+h, r);
+                ctx.arcTo(x,   y+h, x,   y,   r);
+                ctx.arcTo(x,   y,   x+w, y,   r);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+              //end of drawing button rectangles
+              if (player.tankTypeLevel!=prevPlayerLvl && howManyButtonSentToServer < buttonNumber){
+                //if player can upgrade but server havent send the information to draw tank on button, and client havent sent the request before
+                socket.emit('upgradePlease',"button"+buttonNumber.toString(),"tankButton");
+                howManyButtonSentToClient = 0;
+                howManyButtonSentToServer = buttonNumber;
+              }
+              else if (howManyButtonSentToClient>=buttonNumber){
+                //draw players on button
+                didAnyButtonDraw = "yes";
+                playerSize = eval("buttonTank"+buttonNumber.toString()+".width") * player.fovMultiplier;
+                playerX = eval("button"+buttonNumber.toString()+".x + button"+buttonNumber.toString()+".width/2") * player.fovMultiplier;
+                playerY = eval("button"+buttonNumber.toString()+".y + button"+buttonNumber.toString()+".width/2") * player.fovMultiplier;
+                ctx.save()
+                ctx.translate(playerX,playerY);
+                ctx.rotate(eval("button"+buttonNumber.toString()).tankRotate * Math.PI / 180);
+                ctx.lineWidth = 5 * player.fovMultiplier;
+                
+                //draw assets, e.g. rammer body base
+                if(eval("buttonTank"+buttonNumber.toString()).assets){
+                  Object.keys(eval("buttonTank"+buttonNumber.toString()).assets).forEach((assetID) => {
+                    var asset = eval("buttonTank"+buttonNumber.toString()).assets[assetID]
+                    console.log(asset.size)
+                    ctx.fillStyle = asset.color;
+                    ctx.strokeStyle = asset.outline;
+                    ctx.lineWidth = asset.outlineThickness;
+                    if (asset.sides==0){
+                      ctx.beginPath();
+                      ctx.arc(0, 0, playerSize*asset.size, 0, 2 * Math.PI);
+                      ctx.fill();
+                      ctx.stroke();
+                    }
+                    else{
+                      ctx.beginPath();
+                      var baseSides = asset.sides;
+                      ctx.moveTo(0 + playerSize*asset.size * Math.cos(0), 0 + playerSize*asset.size * Math.sin(0));
+                      for (var i = 1; i <= baseSides; i += 1) {
+                        ctx.lineTo(0 + playerSize*asset.size * Math.cos(i * 2 * Math.PI / baseSides), 0 + playerSize*asset.size * Math.sin(i * 2 * Math.PI / baseSides));
+                      }
+                      ctx.fill();
+                      ctx.stroke();
+                    }
+                  })
+                }
+                /*
+                //draw base for rammer tanks
+                if (eval("buttonTank"+buttonNumber.toString()).tankType=="annihilator"){
+                  ctx.fillStyle = "grey";
+                  ctx.strokeStyle = "black";
+                  ctx.fillRect(-playerSize*1.25, -playerSize*1.25, playerSize*2.5, playerSize*2.5);
+                  ctx.strokeRect(-playerSize*1.25, -playerSize*1.25, playerSize*2.5, playerSize*2.5);
+                }
+                else if (eval("buttonTank"+buttonNumber.toString()).tankType=="landmine"){
+                  ctx.fillStyle = "grey";
+                  ctx.strokeStyle = "black";
+                  ctx.beginPath();
+                  var baseSides = 5;
+                  ctx.moveTo(0 + playerSize*1.5 * Math.cos(0), 0 + playerSize*1.5 * Math.sin(0));
+                  for (var i = 1; i <= baseSides; i += 1) {
+                    ctx.lineTo(0 + playerSize*1.5 * Math.cos(i * 2 * Math.PI / baseSides), 0 + playerSize*1.5 * Math.sin(i * 2 * Math.PI / baseSides));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else if (eval("buttonTank"+buttonNumber.toString()).tankType=="rammer"){
+                  ctx.fillStyle = "grey";
+                  ctx.strokeStyle = "black";
+                  ctx.beginPath();
+                  var baseSides = 6;
+                  ctx.moveTo(0 + playerSize*1.5 * Math.cos(0), 0 + playerSize*1.5 * Math.sin(0));
+                  for (var i = 1; i <= baseSides; i += 1) {
+                    ctx.lineTo(0 + playerSize*1.5 * Math.cos(i * 2 * Math.PI / baseSides), 0 + playerSize*1.5 * Math.sin(i * 2 * Math.PI / baseSides));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else if (eval("buttonTank"+buttonNumber.toString()).tankType=="ziggurat"){
+                  ctx.fillStyle = "grey";
+                  ctx.strokeStyle = "black";
+                  ctx.beginPath();
+                  ctx.arc(0, 0, playerSize*1.5, 0, 2 * Math.PI);
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else if (eval("buttonTank"+buttonNumber.toString()).tankType=="medic"){
+                  ctx.fillStyle = "grey";
+                  ctx.strokeStyle = "black";
+                  ctx.beginPath();
+                  var baseSides = 3;
+                  ctx.moveTo(0 + playerSize*1.5 * Math.cos(0), 0 + playerSize*1.5 * Math.sin(0));
+                  for (var i = 1; i <= baseSides; i += 1) {
+                    ctx.lineTo(0 + playerSize*1.5 * Math.cos(i * 2 * Math.PI / baseSides), 0 + playerSize*1.5 * Math.sin(i * 2 * Math.PI / baseSides));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else if (eval("buttonTank" + buttonNumber.toString()).tankType == "raider" || eval("buttonTank" + buttonNumber.toString()).tankType=="forge" || eval("buttonTank" + buttonNumber.toString()).tankType=="foundry" || eval("buttonTank" + buttonNumber.toString()).tankType=="oven"){
+                  ctx.fillStyle = "rgba(255,0,0,.3)";
+                  ctx.beginPath();
+                  ctx.arc(0, 0, playerSize*2, 0, 2 * Math.PI);
+                  ctx.fill();
+                }
+                else if (eval("buttonTank" + buttonNumber.toString()).tankType == "blizzard"){
+                  ctx.fillStyle = "rgba(157, 196, 209,.5)";
+                  ctx.beginPath();
+                  ctx.arc(0, 0, playerSize*2, 0, 2 * Math.PI);
+                  ctx.fill();
+                }
+                */
+
+                //draw barrel
+                Object.keys(eval("buttonTank"+buttonNumber.toString()).barrels).forEach((barrel) => {
+                  //note that you must use [barrel] instead of .barrel, if not there will be an error
+                  let thisBarrel = eval("buttonTank"+buttonNumber.toString()).barrels[barrel];
+                  ctx.rotate(thisBarrel.additionalAngle  * Math.PI / 180);//rotate to barrel angle
+                  ctx.fillStyle = "grey";
+                  ctx.strokeStyle = "#5e5e5e";
+                  //bullt barrel
+                  if (thisBarrel.barrelType == "bullet"){
+                    ctx.fillRect(-thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight * player.fovMultiplier, thisBarrel.barrelWidth * player.fovMultiplier, thisBarrel.barrelHeight * player.fovMultiplier);
+                    ctx.strokeRect(-thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight * player.fovMultiplier, thisBarrel.barrelWidth * player.fovMultiplier, thisBarrel.barrelHeight * player.fovMultiplier);
+                  }
+                    //drone barrel
+                  else if (thisBarrel.barrelType == "drone"){
+                    ctx.beginPath();
+                    ctx.moveTo(-thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier,0);
+                    ctx.lineTo(-thisBarrel.barrelWidth * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight * player.fovMultiplier);
+                    ctx.lineTo(thisBarrel.barrelWidth * player.fovMultiplier+thisBarrel.x*2 * player.fovMultiplier, -thisBarrel.barrelHeight * player.fovMultiplier);
+                    ctx.lineTo(thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x*2 * player.fovMultiplier,0);
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                    //trap barrel
+                  else if (thisBarrel.barrelType == "trap"){
+                    ctx.fillRect(-thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight/3*2 * player.fovMultiplier, thisBarrel.barrelWidth * player.fovMultiplier, thisBarrel.barrelHeight/3*2 * player.fovMultiplier);
+                    ctx.strokeRect(-thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight/3*2 * player.fovMultiplier, thisBarrel.barrelWidth * player.fovMultiplier, thisBarrel.barrelHeight/3*2 * player.fovMultiplier);
+                    ctx.beginPath();
+                    ctx.moveTo(-thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier,-thisBarrel.barrelHeight/3*2 * player.fovMultiplier);
+                    ctx.lineTo(-thisBarrel.barrelWidth * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight * player.fovMultiplier);
+                    ctx.lineTo(thisBarrel.barrelWidth * player.fovMultiplier+thisBarrel.x * player.fovMultiplier, -thisBarrel.barrelHeight * player.fovMultiplier);
+                    ctx.lineTo(thisBarrel.barrelWidth/2 * player.fovMultiplier+thisBarrel.x * player.fovMultiplier,-thisBarrel.barrelHeight/3*2 * player.fovMultiplier);
+                    ctx.fill();
+                    ctx.stroke();
+                  }
+                  ctx.rotate(-thisBarrel.additionalAngle  * Math.PI / 180);//rotate back
+                })
+                
+                //draw body
+                if (player.level>=100&&player.tankTypeLevel<100&&player.tankTypeLevel==45){//if button is for tier 6 tanks
+                  ctx.fillStyle = "#934c93";
+                  ctx.strokeStyle = "#660066";
+                  ctx.beginPath();
+                  var baseSides = 6;
+                  ctx.moveTo(0 + playerSize * Math.cos(0), 0 + playerSize * Math.sin(0));
+                  for (var i = 1; i <= baseSides; i += 1) {
+                    ctx.lineTo(0 + playerSize * Math.cos(i * 2 * Math.PI / baseSides), 0 + playerSize * Math.sin(i * 2 * Math.PI / baseSides));
+                  }
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                else{//normal tank
+                  ctx.fillStyle = "#0092e0";
+                  ctx.strokeStyle = "#0079ba";
+                  ctx.beginPath();
+                  ctx.arc(0, 0, playerSize, 0, 2 * Math.PI);
+                  ctx.fill();
+                  ctx.stroke();
+                }
+                ctx.restore();//restore coordinates to saved
+              }
+              //write names of tanks
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 5 * player.fovMultiplier;
+                ctx.font = "bold " + 25 * player.fovMultiplier + "px Arial";
+                ctx.textAlign = "center";
+              var tankButtonName = "Error"
+                if (buttonNumber==1){
+                  tankButtonName = one;
+                }
+                else if (buttonNumber==2){
+                  tankButtonName = two;
+                }
+              else if (buttonNumber==3){
+                  tankButtonName = three;
+                }
+              else if (buttonNumber==4){
+                  tankButtonName = four;
+                }
+              else if (buttonNumber==5){
+                  tankButtonName = five;
+                }
+              else if (buttonNumber==6){
+                  tankButtonName = six;
+                }
+              else if (buttonNumber==7){
+                  tankButtonName = seven;
+                }
+              ctx.strokeText(tankButtonName, eval("button"+buttonNumber.toString()+".x + button"+buttonNumber.toString()+".width/2") * player.fovMultiplier, eval("button"+buttonNumber.toString()+".y + button"+buttonNumber.toString()+".width - 15") * player.fovMultiplier);
+              ctx.fillText(tankButtonName, eval("button"+buttonNumber.toString()+".x + button"+buttonNumber.toString()+".width/2") * player.fovMultiplier, eval("button"+buttonNumber.toString()+".y + button"+buttonNumber.toString()+".width - 15") * player.fovMultiplier);
+            }//end of function
+          
+            //IF ADD A TANK OR CHANGE UPGRADES, REMEMBER TO UPDATE UPGRADE TREE BELOW THESE CODE
+
+            //lvl 1 upgrade
+            if (player.level>=1&&player.tankTypeLevel<1){//if player can upgrade but havent
+              //draw 7 buttons: 1 to 7, but write 8 because the loop stop when number become 8
+              for (let i = 1; i < 8; i++) {
+                buttondraw(i, "twin", "sniper", "cannon", "flank", "fortress", "node", "guard")
+              }
+            }
+              
+            //lvl 5 upgrade
+              
+            else if (player.level>=5&&player.tankTypeLevel<5){//if player can upgrade but havent
+              if (player.tankType=="twin"){
+                //twin upgrades: gunner, quad, mono, split, palace, double
+                //draw 5 buttons
+                for (let i = 1; i < 7; i++) {
+                  buttondraw(i, "gunner", "quad", "mono", "split", "palace", "double", "empty")
+                }
+              }
+              else if (player.tankType=="sniper"){
+                //sniper upgrades: targeter, marksman, blazer
+                //draw 3 buttons
+                for (let i = 1; i < 4; i++) {
+                  buttondraw(i, "targeter", "marksman", "blazer", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="fortress"){
+                //fortress upgrade: palisade
+                //draw 1 button
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "palisade", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="cannon"){
+                //cannon upgrade: single
+                //draw 1 button
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "single", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="flank"){
+                //flank upgrade: flare
+                //draw 1 button
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "flare", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="guard"){
+                //guard upgrade: auto guard, commander
+                //draw 2 buttons
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "auto-guard", "commander", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="node"){
+                //node upgrade: annihilator, raider
+                //draw 2 buttons
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "annihilator", "raider", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+            }
+
+            //lvl 20 upgrade
+
+            else if (player.level>=20&&player.tankTypeLevel<20){//if player can upgrade but havent
+              if (player.tankType=="double"){
+                //triple upgrades: quadruple
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "triple", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="gunner"){
+                //gunner upgrades: blaster, warship, rimfire
+                for (let i = 1; i < 4; i++) {
+                  buttondraw(i, "blaster", "warship", "rimfire", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="single"){
+                //single upgrades: destroyer
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "destroyer", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="targeter"){
+                //targeter upgrades: triplet, streamliner
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "triplet", "streamliner", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="quad"){
+                //quad upgrades: blitz
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "blitz", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="flare"){
+                //flare upgrades: booster
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "booster", "fighter", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="marksman"){
+                //marksman upgrades: duel
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "duel", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="blazer"){
+                //blazer upgrades: swarm
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "swarm", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="annihilator"){
+                //annihilator upgrades: landmine
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "landmine", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="mono"){
+                //mono upgrades: sentry
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "sentry", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="split"){
+                //split upgrades: tower
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "tower", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="raider"){
+                //raider upgrades: forge
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "forge", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="auto-guard"){
+                //auto-guard upgrades: auto-commander
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "auto-commander", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="commander"){
+                //commander upgrades: mothership
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "mothership", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="palisade"){
+                //palisade upgrades: castle
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "castle", "warden", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              if (player.tankType=="palace"){
+                //palace upgrades: brigade
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "brigade", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+            }
+            
+            //lvl 45 upgrade
+
+            else if (player.level>=45&&player.tankTypeLevel<45){//IF CHANGE THIS LEVEL, change the level in the code for choosing color of tank in button
+              if (player.tankType=="blitz"){
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "cyclone", "tornado", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="blaster"){
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "tetra", "knockback", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="warship"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "cruiser", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="streamliner"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "conquerer", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="destroyer"){
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "death star", "harbinger", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="booster"){
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "riot", "guardian", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="duel"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "hunter", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="swarm"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "assassin", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="landmine"){
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "rammer", "ziggurat", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="forge"){
+                for (let i = 1; i < 3; i++) {
+                  buttondraw(i, "foundry", "blizzard", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="sentry"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "bastion", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="tower" || player.tankType=="triplet"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "stronghold", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="triple"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "quadruple", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="auto-commander" || player.tankType=="mothership"){
+                //both upgrade to the exact same tanks
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "auto-mothership", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="castle"){
+                for (let i = 1; i < 4; i++) {
+                  buttondraw(i, "constructor", "mechanic", "citadel", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="warden"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "defender", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="brigade"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "battalion", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+              else if (player.tankType=="rimfire"){
+                for (let i = 1; i < 2; i++) {
+                  buttondraw(i, "???", "empty", "empty", "empty", "empty", "empty", "empty")
+                }
+              }
+            }
+          
+          //lvl 500 upgrade
+
+            else if (player.level>=100&&player.tankTypeLevel<100){//if player can upgrade but havent
+                for (let i = 1; i < 7; i++) {
+                  //if add a tank here, remeber to add the tank name to the code above the code for drawing player body
+                  buttondraw(i, "hailstorm", "bunker", "chaos", "bombshell", "oven", "pounder", "empty")
+                }
+            }
+
+
+          //if no button is drawn
+              
+          else{
+            didAnyButtonDraw = "no";
+            for (let i = 1; i < 8; i++) {
+              eval("button"+i+".x=button"+i+".startx");//reset position of all upgrade buttons for the next animation
+            }
+            
+            
+            var textToWrite = "nothing"
+            if (player.level<1){
+              var textToWrite = "Next tank upgrade at level 1."
+            }
+            else if (player.level<5){
+              var textToWrite = "Next tank upgrade at level 5."
+            }
+            else if (player.level<20){
+              var textToWrite = "Next tank upgrade at level 20."
+            }
+            else if (player.level<45){
+              var textToWrite = "Next tank upgrade at level 45."
+            }
+            else if (player.level<100){
+              var textToWrite = "Next tank upgrade at level 100."
+            }
+            if (textToWrite!="nothing"){
+              ctx.fillStyle = "rgba(128,128,128,.7)";
+              ctx.strokeStyle = "black";
+              ctx.lineWidth = 5;
+              ctx.font = "bold 25px Arial";
+              ctx.textAlign = "center";
+              ctx.lineJoin = 'round';//prevent spikes above the capital letter "M"
+              //draw rect
+              var textWidth = ctx.measureText(textToWrite).width;//get width of text
+              var xpadding = 25;
+              var ypadding = 10;
+              var w = textWidth+xpadding*2;
+              var h = 25+ypadding*2;
+              var r = h/3;//radius is one third of height
+              var x = canvas.width - w - 50;
+              var y = canvas.height - h - 50;
+              ctx.beginPath();
+              ctx.moveTo(x+r, y);
+              ctx.arcTo(x+w, y,   x+w, y+h, r);
+              ctx.arcTo(x+w, y+h, x,   y+h, r);
+              ctx.arcTo(x,   y+h, x,   y,   r);
+              ctx.arcTo(x,   y,   x+w, y,   r);
+              ctx.closePath();
+              ctx.fill();
+              //write words
+              ctx.fillStyle = "white";
+              ctx.strokeText(textToWrite, canvas.width - w/2 - 50, canvas.height - h/2 - 50 +10);
+              ctx.fillText(textToWrite, canvas.width - w/2 - 50, canvas.height - h/2 - 50 + 10);
+              ctx.lineJoin = 'miter';//change it back
+            }
+          }
+            //write tank information when hover over button
+            for (let i = 1; i < 8; i++) {
+              if (eval("button"+i.toString()).hover=="yes" && howManyButtonSentToClient>=i && didAnyButtonDraw=="yes"){
+                  //if mouse hover over button and there is player information and the button is already drawn, write tank information
+                //draw rectangle
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.globalAlpha = eval("button"+i.toString()).opacity;//change transparency to same transparency as button
+                var w = eval("button"+i.toString()).width* 1.5 * player.fovMultiplier;
+                var h = eval("button"+i.toString()).width* 2.8 * player.fovMultiplier;
+                var r = 25  * player.fovMultiplier;//radius is one third of height
+                var x = eval("button"+i.toString()+".x - button"+i.toString()+".width*0.25") * player.fovMultiplier;
+                var y = eval("button"+i.toString()+".y - button"+i.toString()+".width*3.0") * player.fovMultiplier;
+                ctx.beginPath();
+                ctx.moveTo(x+r, y);
+                ctx.arcTo(x+w, y,   x+w, y+h, r);
+                ctx.arcTo(x+w, y+h, x,   y+h, r);
+                ctx.arcTo(x,   y+h, x,   y,   r);
+                ctx.arcTo(x,   y,   x+w, y,   r);
+                ctx.closePath();
+                ctx.fill();
+                //write information
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 3 * player.fovMultiplier;
+                ctx.font = "bold " + 20 * player.fovMultiplier + "px Arial";
+                ctx.textAlign = "center";
+                //health value
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Health: " + eval("buttonTank"+i.toString()+".maxhealth"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 40 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Health: " + eval("buttonTank"+i.toString()+".maxhealth"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 40 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //health regen speed value
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Heal speed: " + eval("buttonTank"+i.toString()+".healthRegenSpeed"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 65 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Heal speed: " + eval("buttonTank"+i.toString()+".healthRegenSpeed"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 65 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //health regen time value
+                ctx.fillStyle = "salmon";
+                ctx.strokeText("Heal delay: " + eval("buttonTank"+i.toString()+".healthRegenTime"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 90 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Heal delay: " + eval("buttonTank"+i.toString()+".healthRegenTime"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 90 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //damage value
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Body damage: " + eval("buttonTank"+i.toString()+".damage"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 115 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Body damage: " + eval("buttonTank"+i.toString()+".damage"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 115 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //speed value
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Speed: " + eval("buttonTank"+i.toString()+".speed"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 140 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Speed: " + eval("buttonTank"+i.toString()+".speed"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 140 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //AI value
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("AI: " + eval("buttonTank"+i.toString()+".haveAI"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 165 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("AI: " + eval("buttonTank"+i.toString()+".haveAI"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 165 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                var range = "";
+                var lowest = "what";
+                var highest = "what";
+                function findRangeValue(propertyName){
+                  //each individual barrel have different stats for certain stats, so we need to find the range
+                  range = "";
+                  lowest = "what";
+                  highest = "what";
+                  Object.keys(eval("buttonTank"+i.toString()+".barrels")).forEach((barrel) => {
+                    if(lowest=="what"){//if this is the first barrel
+                      lowest = eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]");
+                    }
+                    else if (eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]")>lowest){
+                      if (highest=="what"){
+                        highest = eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]");
+                      }
+                      else if (eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]")>highest){
+                        highest = eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]");
+                      }
+                    }
+                    else if (eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]")<lowest){
+                      highest = lowest
+                      lowest = eval("buttonTank"+i.toString()+".barrels[barrel][propertyName]")
+                    }
+                  })
+                  if (lowest=="what"){//no barrels
+                    range = "-";
+                  }
+                  else if (highest=="what"){//1 barrel or all barrels have same value
+                    range = lowest;
+                  }
+                  else{//if there is a range
+                    range = lowest + " - " + highest
+                  }
+                }
+                //reload recover value
+                findRangeValue("reloadRecover")
+                ctx.fillStyle = "salmon";
+                ctx.strokeText("Reload delay: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 190 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Reload delay: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 190 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //bullet damage value
+                findRangeValue("bulletDamage")
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Bullet damage: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 215 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Bullet damage: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 215 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //bullet health value
+                findRangeValue("bulletHealth")
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Bullet health: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 240 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Bullet health: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 240 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //bullet timer value
+                findRangeValue("bulletTimer")
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Bullet lifespan: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 265 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Bullet lifespan: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 265 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //bullet speed value
+                findRangeValue("bulletSpeed")
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("Bullet speed: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 290 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("Bullet speed: " + range, eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 290 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                //fov value
+                ctx.fillStyle = "lightgreen";
+                ctx.strokeText("FoV: " + eval("buttonTank"+i.toString()+".fovMultiplier"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 315 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.fillText("FoV: " + eval("buttonTank"+i.toString()+".fovMultiplier"), eval("button"+i.toString()+".x + button"+i.toString()+".width/2") * player.fovMultiplier, eval("button"+i.toString()+".y + 315 - button"+i.toString()+".width*3.0") * player.fovMultiplier);
+                ctx.globalAlpha = 1.0;//reset transparency  
+              }
+            }
+          
+            //UPGRADE TREE
+          
+            if(showUpgradeTree=="yes"||upgradetreepos>upgradetreestart){//if upgrade tree is open of upgrade tree is closing
+              ctx.lineJoin = 'round';//prevent spikes above the capital letter "M"
+              var rectHeight = 75;//height of box always the same
+              var upgradeTreeFontSize = 0;
+              var tankNameTextWidth = 0;//width of box changes based on tank name length
+              
+              ctx.textAlign = "center";
+              function drawUpgradetreeBox(name,Xadditional,Yadditional, fontsize, padding){
+                upgradeTreeFontSize = fontsize;
+                ctx.font = "bold " + upgradeTreeFontSize*player.fovMultiplier + "px Arial";
+                tankNameTextWidth = ctx.measureText(name).width/player.fovMultiplier + padding*2;//get width of text, wiht additional padding on both sides
+                ctx.fillStyle = "rgba(0, 146, 224, .5)";
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 2 * player.fovMultiplier;
+                //ctx.fillRect(canvas.width/2 - (tankNameTextWidth/2+Xadditional)*player.fovMultiplier, (upgradetreepos+Yadditional) * player.fovMultiplier, tankNameTextWidth * player.fovMultiplier, rectHeight * player.fovMultiplier);
+                var w = tankNameTextWidth*player.fovMultiplier;
+                var h = rectHeight * player.fovMultiplier;
+                var r = 20  * player.fovMultiplier;//radius is one third of height
+                var x = canvas.width/2 - (tankNameTextWidth/2 + Xadditional)*player.fovMultiplier;
+                var y = (upgradetreepos+Yadditional) * player.fovMultiplier;
+                ctx.beginPath();
+                ctx.moveTo(x+r, y);
+                ctx.arcTo(x+w, y,   x+w, y+h, r);
+                ctx.arcTo(x+w, y+h, x,   y+h, r);
+                ctx.arcTo(x,   y+h, x,   y,   r);
+                ctx.arcTo(x,   y,   x+w, y,   r);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = "black";
+                ctx.lineWidth = 5 * player.fovMultiplier;
+                ctx.strokeText(name, canvas.width/2-Xadditional*player.fovMultiplier, upgradetreepos*player.fovMultiplier + (rectHeight/2+upgradeTreeFontSize/2+Yadditional)*player.fovMultiplier);
+                ctx.fillText(name, canvas.width/2-Xadditional*player.fovMultiplier, upgradetreepos*player.fovMultiplier + (rectHeight/2+upgradeTreeFontSize/2+Yadditional)*player.fovMultiplier);
+              }
+              function drawConnection(startX, startY, endX, endY){
+                ctx.strokeStyle = "rgba(51,51,51)";
+                ctx.lineWidth = 3 * player.fovMultiplier;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width/2-startX*player.fovMultiplier, (upgradetreepos+startY+rectHeight)*player.fovMultiplier);
+                ctx.lineTo(canvas.width/2-endX*player.fovMultiplier, (upgradetreepos+endY)*player.fovMultiplier);
+                ctx.stroke();
+              }
+              //draw all the boxes
+              drawUpgradetreeBox("basic",0,0,25,15)
+              
+              drawUpgradetreeBox("twin",525,125,25,15)
+              drawUpgradetreeBox("sniper",350,125,25,15)
+              drawUpgradetreeBox("cannon",175,125,25,15)
+              drawUpgradetreeBox("flank",0,125,25,15)
+              drawUpgradetreeBox("fortress",-175,125,25,15)
+              drawUpgradetreeBox("node",-350,125,25,15)
+              drawUpgradetreeBox("guard",-525,125,25,15)
+              drawConnection(0, 0, 525, 125)
+              drawConnection(0, 0, 350, 125)
+              drawConnection(0, 0, 175, 125)
+              drawConnection(0, 0, 0, 125)
+              drawConnection(0, 0, -175, 125)
+              drawConnection(0, 0, -350, 125)
+              drawConnection(0, 0, -525, 125)
+              
+              drawUpgradetreeBox("gunner",650,250,15,15)
+              drawUpgradetreeBox("quad",574,250,15,15)
+              drawUpgradetreeBox("mono",502,250,15,15)
+              drawUpgradetreeBox("split",433,250,15,15)
+              drawUpgradetreeBox("palace",361,250,15,15)
+              drawUpgradetreeBox("double",280,250,15,15)
+              drawUpgradetreeBox("targeter",193,250,15,15)
+              drawUpgradetreeBox("marksman",93,250,15,15)
+              drawUpgradetreeBox("blazer",1,250,15,15)
+              drawUpgradetreeBox("single",-74,250,15,15)
+              drawUpgradetreeBox("flare",-146,250,15,15)
+              drawUpgradetreeBox("palisade",-225,250,15,15)
+              drawUpgradetreeBox("annihilator",-329,250,15,15)
+              drawUpgradetreeBox("raider",-425,250,15,15)
+              drawUpgradetreeBox("auto-guard",-530,250,15,15)
+              drawUpgradetreeBox("commander",-650,250,15,15)
+              drawConnection(525, 125, 650, 250)
+              drawConnection(525, 125, 574, 250)
+              drawConnection(525, 125, 502, 250)
+              drawConnection(525, 125, 433, 250)
+              drawConnection(525, 125, 361, 250)
+              drawConnection(525, 125, 280, 250)
+              drawConnection(350, 125, 193, 250)
+              drawConnection(350, 125, 93, 250)
+              drawConnection(350, 125, 1, 250)
+              drawConnection(175, 125, -74, 250)
+              drawConnection(0, 125, -146, 250)
+              drawConnection(-175, 125, -225, 250)
+              drawConnection(-525, 125, -530, 250)
+              drawConnection(-525, 125, -650, 250)
+              drawConnection(-350, 125, -329, 250)
+              drawConnection(-350, 125, -425, 250)
+
+              drawUpgradetreeBox("blaster",710,375,15,10)
+              drawUpgradetreeBox("warship",635,375,15,10)
+              drawUpgradetreeBox("rimfire",562,375,15,10)
+              drawUpgradetreeBox("blitz",505,375,15,10)
+              drawUpgradetreeBox("sentry",448,375,15,10)
+              drawUpgradetreeBox("tower",382,375,15,10)
+              drawUpgradetreeBox("brigade",310,375,15,10)
+              drawUpgradetreeBox("triple",245,375,15,10)
+              drawUpgradetreeBox("triplet",187,375,15,10)
+              drawUpgradetreeBox("streamliner",107,375,15,10)
+              drawUpgradetreeBox("duel",28,375,15,10)
+              drawUpgradetreeBox("swarm",-30,375,15,10)
+              drawUpgradetreeBox("destroyer",-105,375,15,10)
+              drawUpgradetreeBox("booster",-190,375,15,10)
+              drawUpgradetreeBox("castle",-260,375,15,10)
+              drawUpgradetreeBox("warden",-327,375,15,10)
+              drawUpgradetreeBox("landmine",-409,375,15,10)
+              drawUpgradetreeBox("forge",-486,375,15,10)
+              drawUpgradetreeBox("auto-commander",-585,375,15,10)
+              drawUpgradetreeBox("mothership",-710,375,15,10)
+              drawConnection(650, 250, 710, 375)
+              drawConnection(650, 250, 635, 375)
+              drawConnection(650, 250, 562, 375)
+              drawConnection(574, 250, 505, 375)
+              drawConnection(502, 250, 448, 375)
+              drawConnection(433, 250, 382, 375)
+              drawConnection(361, 250, 310, 375)
+              drawConnection(280, 250, 245, 375)
+              drawConnection(193, 250, 187, 375)
+              drawConnection(193, 250, 107, 375)
+              drawConnection(93, 250, 28, 375)
+              drawConnection(1, 250, -30, 375)
+              drawConnection(-74, 250, -105, 375)
+              drawConnection(-146, 250, -190, 375)
+              drawConnection(-225, 250, -260, 375)
+              drawConnection(-225, 250, -327, 375)
+              drawConnection(-329, 250, -409, 375)
+              drawConnection(-425, 250, -486, 375)
+              drawConnection(-530, 250, -585, 375)
+              drawConnection(-650, 250, -710, 375)
+
+              drawUpgradetreeBox("tetra",870,500,12,10)
+              drawUpgradetreeBox("knockback",804,500,12,10)
+              drawUpgradetreeBox("cruiser",733,500,12,10)
+              drawUpgradetreeBox("rimfire",675,500,12,10)//rimfire doesnt have upgrade yet, so i'll jus write rimfire
+              drawUpgradetreeBox("cyclone",614,500,12,10)
+              drawUpgradetreeBox("tornado",547,500,12,10)
+              drawUpgradetreeBox("bastion",485,500,12,10)
+              drawUpgradetreeBox("stronghold",410,500,12,10)
+              drawUpgradetreeBox("battalion",332,500,12,10)
+              drawUpgradetreeBox("quadruple",258,500,12,10)
+              drawUpgradetreeBox("conquerer",180,500,12,10)
+              drawUpgradetreeBox("hunter",113,500,12,10)
+              drawUpgradetreeBox("assassin",50,500,12,10)
+              drawUpgradetreeBox("death-star",-24,500,12,10)
+              drawUpgradetreeBox("harbinger",-102,500,12,10)
+              drawUpgradetreeBox("riot",-161,500,12,10)
+              drawUpgradetreeBox("guardian",-215,500,12,10)
+              drawUpgradetreeBox("constructor",-295,500,12,10)
+              drawUpgradetreeBox("mechanic",-375,500,12,10)
+              drawUpgradetreeBox("citadel",-442,500,12,10)
+              drawUpgradetreeBox("defender",-507,500,12,10)
+              drawUpgradetreeBox("rammer",-577,500,12,10)
+              drawUpgradetreeBox("ziggurat",-645,500,12,10)
+              drawUpgradetreeBox("foundry",-710,500,12,10)
+              drawUpgradetreeBox("blizzard",-777,500,12,10)
+              drawUpgradetreeBox("auto-mothership",-870,500,12,10)
+              drawConnection(710, 375, 870, 500)
+              drawConnection(710, 375, 804, 500)
+              drawConnection(635, 375, 733, 500)
+              drawConnection(562, 375, 675, 500)
+              drawConnection(505, 375, 614, 500)
+              drawConnection(505, 375, 547, 500)
+              drawConnection(448, 375, 485, 500)
+              drawConnection(382, 375, 410, 500)
+              drawConnection(310, 375, 332, 500)
+              drawConnection(245, 375, 258, 500)
+              drawConnection(187, 375, 410, 500)
+              drawConnection(107, 375, 180, 500)
+              drawConnection(28, 375, 113, 500)
+              drawConnection(-30, 375, 50, 500)
+              drawConnection(-105, 375, -24, 500)
+              drawConnection(-105, 375, -102, 500)
+              drawConnection(-190, 375, -161, 500)
+              drawConnection(-190, 375, -215, 500)
+              drawConnection(-260, 375, -295, 500)
+              drawConnection(-260, 375, -375, 500)
+              drawConnection(-260, 375, -442, 500)
+              drawConnection(-327, 375, -507, 500)
+              drawConnection(-409, 375, -557, 500)
+              drawConnection(-409, 375, -645, 500)
+              drawConnection(-486, 375, -710, 500)
+              drawConnection(-486, 375, -777, 500)
+              drawConnection(-585, 375, -870, 500)
+              drawConnection(-710, 375, -870, 500)
+              
+              drawUpgradetreeBox("hailstorm",425,625,25,15)
+              drawUpgradetreeBox("bunker",255,625,25,15)
+              drawUpgradetreeBox("chaos",85,625,25,15)
+              drawUpgradetreeBox("bombshell",-85,625,25,15)
+              drawUpgradetreeBox("oven",-255,625,25,15)
+              drawUpgradetreeBox("pounder",-425,625,25,15)
+
+              ctx.lineJoin = 'miter';//change it back
+              
+              //animate upgrade tree when opening
+              if (showUpgradeTree=="yes"&&upgradetreepos<upgradetreeend){
+                upgradetreepos+=(upgradetreeend-upgradetreepos)/5;//speed changes based on amount moved so far. the smaller the number, the faster
+                if ((upgradetreeend-upgradetreepos)<1){//if very near end point
+                  upgradetreepos=upgradetreeend;
+                }
+              }
+              else if (showUpgradeTree=="no"){//if upgrade tree is closing
+                upgradetreepos-=(upgradetreepos-upgradetreestart)/5;
+                if ((upgradetreepos-upgradetreestart)<1){//if very near end point
+                  upgradetreepos=upgradetreestart;
+                }
+              }
+            }
+            else{//if upgrade tree not drawn
+              upgradetreepos=upgradetreestart;//reset variable
+            }
+          
+            //drawing score progress bar, which is a rounded rectangle
+                      //instead of using the player's score, it uses the client's own score that increases based on the difference between it and the player's score.
+            //e.g. player kills something and score jumps from 0 to 50, but the client's own score will slowly increase from 0 to 50 to create a smooth animation of score progress bar
+            //the score displayed on the score bar is also the client's score
+            //below code increases client's score based on the difference
+            if (player.score>barScore){
+              barScore+=Math.round((player.score-barScore)/15);//math.round ensures that a whole number is added to the score, so the score is always a whole number
+              if (Math.round((player.score-barScore)/15)<1){//if score increment is too small
+                barScore=player.score;
+              }
+            }
+            else{
+              barScore=player.score;//neccessary when player respawns and have score lower than previously
+            }
+          
+            //exponential equation used: score = 1.05^level * 9000 - 9000
+            //numberA^level * numberB - numberC
+            numberA = 1.05;
+            numberB = 9000;
+            numberC = 9000;
+          
+            if (barScore>0){
+              var barcurrentlevel = Math.floor(Math.log((barScore+numberC)/numberB) / Math.log(numberA));//calculation for current level
+            }
+            else{
+              var barcurrentlevel = 0;
+            }
+            var barnextlevel = barcurrentlevel+1;//calculation for next level
+          
+            var w = 500;
+            var h = 75;
+            var r = h/2;
+            var x = canvas.width/2-w/2*player.fovMultiplier;
+            var y = canvas.height-h*player.fovMultiplier-50*player.fovMultiplier;
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(x+r*player.fovMultiplier, y);
+            ctx.arcTo(x+w*player.fovMultiplier, y, x+w*player.fovMultiplier, y+h*player.fovMultiplier, r*player.fovMultiplier);
+            ctx.arcTo(x+w*player.fovMultiplier, y+h*player.fovMultiplier, x, y+h*player.fovMultiplier, r*player.fovMultiplier);
+            ctx.arcTo(x, y+h*player.fovMultiplier, x, y, r*player.fovMultiplier);
+            ctx.arcTo(x, y, x+w*player.fovMultiplier, y, r*player.fovMultiplier);
+            ctx.closePath();
+            ctx.fill();
+            h = 65;
+            if (barScore>0){
+              w = 490/((Math.pow(numberA,barnextlevel)*numberB-numberC) - (Math.pow(numberA,barcurrentlevel)*numberB-numberC))*(barScore - (Math.pow(numberA,barcurrentlevel)*numberB-numberC));//max width 490
+            }
+            else{
+              w = 0
+            }
+            if (w<h){
+              h=w;
+            }
+            x = canvas.width/2-490/2*player.fovMultiplier;//max width 490
+            y = canvas.height-65/2*player.fovMultiplier-h/2*player.fovMultiplier-55*player.fovMultiplier;//max height 65
+            if (r>w/2){
+              r=w/2;
+            }
+            else{
+              r = h/2;
+            }
+            if (w>0){//dont draw score bar if the score is not more than 0
+              ctx.fillStyle = player.color;
+              ctx.beginPath();
+              ctx.moveTo(x + r*player.fovMultiplier, y);
+              ctx.arcTo(x + w*player.fovMultiplier, y, x + w*player.fovMultiplier, y + h*player.fovMultiplier, r*player.fovMultiplier);
+              ctx.arcTo(x + w*player.fovMultiplier, y + h*player.fovMultiplier, x, y + h*player.fovMultiplier, r*player.fovMultiplier);
+              ctx.arcTo(x, y + h*player.fovMultiplier, x, y, r*player.fovMultiplier);
+              ctx.arcTo(x, y, x + w*player.fovMultiplier, y, r*player.fovMultiplier);
+              ctx.closePath();
+              ctx.fill();
+            }
+            //writing the score, level and tank type
+            //ABBREVIATE SCORE, e.g. 6000 -> 6k
+            //player's score is not abbreviated because need to do calculations using the number, and server might get laggy if it need to abbreviate everyone's score, so abbreviating score is done in client side code
+            var newValue = barScore;
+            if (barScore >= 1000) {
+                var suffixes = ["", "k", "m", "b","t"];
+                var suffixNum = Math.floor( (""+barScore).length/3 );
+                var shortValue = '';
+                for (var precision = 2; precision >= 1; precision--) {
+                    shortValue = parseFloat( (suffixNum != 0 ? (barScore / Math.pow(1000,suffixNum) ) : barScore).toPrecision(precision));
+                    var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                    if (dotLessShortValue.length <= 2) { break; }
+                }
+                if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+                newValue = shortValue+suffixes[suffixNum];
+            }
+
+            var wordFontSize = 30*player.fovMultiplier;//font size is 30px, but need to take into account the canvas resizing
+            
+            ctx.fillStyle = "white";
+            ctx.font = "bold "+wordFontSize+"px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Score: " + newValue + " (" + barScore + ")", canvas.width/2, canvas.height-60*player.fovMultiplier);
+            ctx.fillText("Level " + barcurrentlevel + " " + player.tankType, canvas.width/2, canvas.height-90*player.fovMultiplier);
+          
+            //drawing minimap
+            ctx.fillStyle = "rgb(0,0,0,.5)";
+            ctx.strokeStyle = "grey";
+            ctx.lineWidth = player.fovMultiplier*3;
+            ctx.fillRect(player.fovMultiplier*50, canvas.height-player.fovMultiplier*250, player.fovMultiplier*200, player.fovMultiplier*200);
+            ctx.strokeRect(player.fovMultiplier*50, canvas.height-player.fovMultiplier*250, player.fovMultiplier*200, player.fovMultiplier*200);
+            //player location on minimap
+            ctx.fillStyle = player.color;
+            ctx.beginPath();
+            ctx.arc(player.x/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, player.y/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+          //5 refers to width of player on minimap, the size is not based on actual player size bcause player would be almost invisible on minimap if the map is big
+            ctx.fill();
+            //drawing portals on minimap
+            Object.keys(portals).forEach((portalID) => {
+              let portal = portals[portalID];
+              if (portal.hasOwnProperty('red')){
+                //if portal is radiant
+                ctx.fillStyle = 'rgb(' + portal.red + ', ' + portal.green + ', ' + portal.blue + ')';
+              }
+              else{
+                ctx.fillStyle = portal.color;
+              }
+              ctx.beginPath();
+              ctx.arc(portal.x/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, portal.y/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+            //5 refers to width of portal on minimap, the size is not based on actual portal size bcause portal would be almost invisible on minimap if the map is big
+              ctx.fill();
+            })
+            if (gamelocation=="dune"){
+              //draw hive locations on minimap
+              ctx.fillStyle = "orange";
+              ctx.beginPath();
+              ctx.arc(1500/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, 1500/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+              //5 refers to width of portal on minimap, the size is not based on actual portal size bcause portal would be almost invisible on minimap if the map is big
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(4500/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, 1500/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+              //5 refers to width of portal on minimap, the size is not based on actual portal size bcause portal would be almost invisible on minimap if the map is big
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(1500/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, 4500/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+              //5 refers to width of portal on minimap, the size is not based on actual portal size bcause portal would be almost invisible on minimap if the map is big
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(4500/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, 4500/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+              //5 refers to width of portal on minimap, the size is not based on actual portal size bcause portal would be almost invisible on minimap if the map is big
+              ctx.fill();
+              ctx.fill();
+              ctx.beginPath();
+              ctx.arc(3000/gameAreaSize*player.fovMultiplier*200 + player.fovMultiplier*50, 3000/gameAreaSize*player.fovMultiplier*200 + canvas.height-player.fovMultiplier*250, player.fovMultiplier*5, 0, 2 * Math.PI);
+              //5 refers to width of portal on minimap, the size is not based on actual portal size bcause portal would be almost invisible on minimap if the map is big
+              ctx.fill();
+            }
+          
+            var duration = Date.now()-starting
+            //change color of client code execution time
+            if (duration<5){
+              document.getElementById('clientCodeTime').style.color = "black"
+            }
+            else if (duration<10){
+              document.getElementById('clientCodeTime').style.color = "orange"
+            }
+            else{
+              document.getElementById('clientCodeTime').style.color = "red"
+            }
+            document.getElementById('clientCodeTime').innerHTML = "Client code execution time: " + duration + "ms"
+
+            //draw leaderboard
+            var fromTop = 75*player.fovMultiplier;
+          ctx.fillStyle = "white";
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 5*player.fovMultiplier;
+          ctx.font = "bold " + 40*player.fovMultiplier + "px Arial";
+          ctx.textAlign = "center";
+          ctx.strokeText("Leaderboard", canvas.width-150*player.fovMultiplier, 40*player.fovMultiplier);
+          ctx.fillText("Leaderboard", canvas.width-150*player.fovMultiplier, 40*player.fovMultiplier);
+          //draw leaderboard on home page canvas so that game canvas redraw in main game loop will not cause leaderboard to flash
+          var playerWithMostScore = -1;
+          Object.keys(players).forEach((id) => {
+            //draw score bar background
+            var w = 250*player.fovMultiplier;
+            var maxw = 250*player.fovMultiplier;
+            //both w and maxw should be the same
+            var h = 30*player.fovMultiplier;
+            var r = h/2;
+            var x = canvas.width-150*player.fovMultiplier-w/2;//if change this, remember to change the value of this above the code for drawing colored bar
+            var y = fromTop-h/2;
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.moveTo(x+r, y);
+            ctx.arcTo(x+w, y,   x+w, y+h, r);
+            ctx.arcTo(x+w, y+h, x,   y+h, r);
+            ctx.arcTo(x,   y+h, x,   y,   r);
+            ctx.arcTo(x,   y,   x+w, y,   r);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            //draw score bar based on first player on leaderboard, which is always drawn as 200px, IF the player's score is not 0
+            //the variable w will be NaN if any of their score is 0, because 0 cannot divide by anything. Note that the code below did not check for the leader being zero if the other player is not zero bcause the leader have a higher or same score than the other players
+            if (playerWithMostScore==-1){
+              //if this is the first player in the loop
+              w=maxw;
+              playerWithMostScore = players[id].score;
+            }
+            else{
+              w = players[id].score/playerWithMostScore*maxw;
+            }
+            if (w>0){//dont draw if zero width
+              if ((r*2)>w){
+                r=w/2;//prevent weird shape of radius is more than half of width
+                h=w;
+                y = fromTop-h/2;
+              }
+              //draw colored bar
+              ctx.fillStyle = players[id].color;
+              ctx.beginPath();
+              ctx.moveTo(x+r, y);
+              ctx.arcTo(x+w, y,   x+w, y+h, r);
+              ctx.arcTo(x+w, y+h, x,   y+h, r);
+              ctx.arcTo(x,   y+h, x,   y,   r);
+              ctx.arcTo(x,   y,   x+w, y,   r);
+              ctx.closePath();
+              ctx.fill();
+            }
+            //ABBREVIATE SCORE, e.g. 6000 -> 6k
+            //player's score is not abbreviated because need to do calculations using the number, and server might get laggy if it need to abbreviate everyone's score, so abbreviating score is done in client side code
+            var newValue = players[id].score;
+            if (players[id].score >= 1000) {
+                var suffixes = ["", "k", "m", "b","t"];
+                var suffixNum = Math.floor( (""+players[id].score).length/3 );
+                var shortValue = '';
+                for (var precision = 2; precision >= 1; precision--) {
+                    shortValue = parseFloat( (suffixNum != 0 ? (players[id].score / Math.pow(1000,suffixNum) ) : players[id].score).toPrecision(precision));
+                    var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                    if (dotLessShortValue.length <= 2) { break; }
+                }
+                if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+                newValue = shortValue+suffixes[suffixNum];
+            }
+            //write player name and score
+            ctx.fillStyle = "white";
+            ctx.font = "bold " + 20*player.fovMultiplier + "px Arial";
+            ctx.textAlign = "center";
+            ctx.lineJoin = 'round';//prevent spikes above the capital letter "M"
+            ctx.strokeText(players[id].name + " - " + newValue, canvas.width-150*player.fovMultiplier, fromTop+7.5*player.fovMultiplier);//additional 7.5 to center word properly
+            ctx.fillText(players[id].name + " - " + newValue, canvas.width-150*player.fovMultiplier, fromTop+7.5*player.fovMultiplier);
+            ctx.lineJoin = 'miter';//change it back
+            fromTop+=40*player.fovMultiplier;//height plus space between bars
+          });
+        });
+
+        //when server send notification, this function will create the notification
+        socket.on('newNotification', function(text,color){
+          const notifications = document.getElementById('notifFlex');
+          const notifone = document.createElement('div');
+          notifone.className = "alert";
+          notifone.innerText = text;
+          notifone.style.backgroundColor = color;
+          notifications.appendChild(notifone);
+          setTimeout(() => {
+            notifone.remove()
+          }, 3000);
+        });
+
+        socket.on('tankButton', function(dummyTank, button,realPlayer){
+          if (button=="button1"){
+            buttonTank1 = dummyTank
+          }
+          else if (button=="button2"){
+            buttonTank2 = dummyTank
+          }
+          else if (button=="button3"){
+            buttonTank3 = dummyTank
+          }
+          else if (button=="button4"){
+            buttonTank4 = dummyTank
+          }
+          else if (button=="button5"){
+            buttonTank5 = dummyTank
+          }
+          else if (button=="button6"){
+            buttonTank6 = dummyTank
+          }
+          else if (button=="button7"){
+            buttonTank7 = dummyTank
+          }
+          prevPlayerLvl = realPlayer.tankTypeLevel
+          howManyButtonSentToServer = 0;
+          howManyButtonSentToClient++;
+        })        
+
+        //when player died
+        socket.on('youDied', function(killer,player){
+          //DEATH SCREEN
+          hctx.clearRect(0, 0, hcanvas.width, hcanvas.height);
+          hctx.fillStyle = 'rgba(0,0,0,.5)';
+          hctx.fillRect(0, 0, hcanvas.width, hcanvas.height);//drawing background
+          hctx.fillStyle = "white";
+          hctx.strokeStyle = "black";
+          hctx.lineWidth = 5;
+          hctx.font = "bold 50px Arial";
+          hctx.textAlign = "center";
+          hctx.strokeText("You were killed by " + killer, hcanvas.width/2, hcanvas.height/3);
+          hctx.fillText("You were killed by " + killer, hcanvas.width/2, hcanvas.height/3);
+          //ABBREVIATE SCORE, e.g. 6000 -> 6k
+          //player's score is not abbreviated because need to do calculations using the number, and server might get laggy if it need to abbreviate everyone's score, so abbreviating score is done in client side code
+          var newValue = player.score;
+          if (player.score >= 1000) {
+              var suffixes = ["", "k", "m", "b","t"];
+              var suffixNum = Math.floor( (""+player.score).length/3 );
+              var shortValue = '';
+              for (var precision = 2; precision >= 1; precision--) {
+                  shortValue = parseFloat( (suffixNum != 0 ? (player.score / Math.pow(1000,suffixNum) ) : player.score).toPrecision(precision));
+                  var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                  if (dotLessShortValue.length <= 2) { break; }
+              }
+              if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+              newValue = shortValue+suffixes[suffixNum];
+          }
+          hctx.strokeText("Level " + player.level + " " + player.tankType, hcanvas.width/2, hcanvas.height/1.5);
+          hctx.strokeText("Final score: " + newValue + " (" + player.score + ")", hcanvas.width/2, hcanvas.height/1.5 + 80);
+          hctx.fillText("Level " + player.level + " " + player.tankType, hcanvas.width/2, hcanvas.height/1.5);
+          hctx.fillText("Final score: " + newValue + " (" + player.score + ")", hcanvas.width/2, hcanvas.height/1.5 + 80);
+          document.body.appendChild(continueButton);
+        });
+
+        //client send stuff to server
+        $('html').keydown(function(e) {
+          if (document.activeElement !== document.getElementById('gamename') && document.activeElement !== document.getElementById('chat')  && document.activeElement !== document.getElementById('devtoken')){//prevents triggering commands when typing in input boxes
+            //console.log(e)
+            if (e.key == "ArrowDown"||e.key == "s") {
+              socket.emit('down');
+            }
+            else if (e.key == "ArrowUp"||e.key == "w") {
+              socket.emit('up');
+            }
+            else if (e.key == "ArrowLeft"||e.key == "a") {
+              socket.emit('left');
+            }
+            else if (e.key == "ArrowRight"||e.key == "d") {
+              socket.emit('right');
+            }
+            else if (e.key == "e") {
+              socket.emit('auto-fire');
+            }
+            else if (e.key == "c") {
+              socket.emit('auto-rotate');
+            }
+            else if (e.key == "f") {
+              socket.emit('fast-auto-rotate');
+            }
+            else if (e.key == "m") {
+              //opening and closing debug info box
+              var debugbox = document.getElementById('infoBox');
+              //closing the debug simply hides it, it is not removed to prevent errors when changing information inside it
+              if (window.getComputedStyle(debugbox).display === "none"){//if debug closed
+                debugbox.style.display = 'block';//open debug
+                //notification
+                const notifications = document.getElementById('notifFlex');
+                const notifone = document.createElement('div');
+                notifone.className = "alert";
+                notifone.innerText = "Opened debug";
+                notifone.style.backgroundColor = "grey";
+                notifications.appendChild(notifone);
+                setTimeout(() => {
+                  notifone.remove()
+                }, 3000);
+              }
+              else if (window.getComputedStyle(debugbox).display === "block"){//if debug open
+                debugbox.style.display = 'none';//hide debug
+                //notification
+                const notifications = document.getElementById('notifFlex');
+                const notifone = document.createElement('div');
+                notifone.className = "alert";
+                notifone.innerText = "Closed debug";
+                notifone.style.backgroundColor = "grey";
+                notifications.appendChild(notifone);
+                setTimeout(() => {
+                  notifone.remove()
+                }, 3000);
+              }
+            }
+            else if (e.key == "i"){
+              //notification with more info about game
+              const notifications = document.getElementById('notifFlex');
+              const notifone = document.createElement('div');
+              notifone.className = "alert";
+              //Note: use "\n" for next line instead of <br>
+              notifone.innerText = "Information about the game:\nControls:\nMouse: point barrel in direction\nW,A,S,D or arrow keys: move tank\nE: toggle auto-fire\nC: toggle auto-rotate\nF: toggle 3x fast auto-rotate\nY: toggle upgrade tree\nM: toggle debug\nI: show this notification\nP: passive mode (bullets and auras do not do damage)\nO: open settings\nUpgrade levels:\nLvl 1, 2, 15, 45, 500\nFor more information, click the purple button on the homepage.";
+              notifone.style.backgroundColor = "dimgrey";
+              notifications.appendChild(notifone);
+              setTimeout(() => {
+                notifone.remove()
+              }, 5000);
+            }
+            else if (e.key == "p") {
+              socket.emit('passive-mode');
+            }
+            else if (e.key == "Enter" && gameStart>=1) {//if press enter, add cursor to chat inputbox
+              document.getElementById("chat").focus();//add cursor to input field
+            }
+            else if (e.key == "Enter" && gameStart<1) {//if press enter at homepage, enter the game
+              gameStart = 1;
+            }
+            else if (e.key == "y") {
+              if (showUpgradeTree=="no"){
+                showUpgradeTree = "yes";
+              }
+              else{
+                showUpgradeTree = "no";
+              }
+            }
+            else if (e.key =="o"){//open and close settings
+              if (settingspopup.style.display == 'none'){
+                settingspopup.style.display = 'block';
+              }
+              else{
+                settingspopup.style.display = 'none';
+              }
+            }
+          }
+          else if (document.activeElement === document.getElementById('gamename')){//if name input box is selected
+            if (e.key == "Enter") {//if press enter, do the same thing as when pressing the play button
+              gameStart = 1;
+            }
+          }
+          else if (document.activeElement === document.getElementById('chat')){//if chat input box is selected
+            if (e.key == "Enter") {//if press enter, send chat message
+              var yourChat = document.getElementById("chat").value; //get message
+              socket.emit('chat',yourChat);
+              document.getElementById("chat").value = "";//clear input field
+              document.getElementById("chat").blur();//remove cursor
+            }
+          }
+          else if (document.activeElement === document.getElementById('devtoken')){//if dev token input box is selected
+            if (e.key == "Enter") {//if press enter, send chat message
+              var devToken = document.getElementById("devtoken").value; //get inputted token
+              socket.emit('developerTest',devToken);
+              document.getElementById("devtoken").value = "";//clear input field
+              document.getElementById("devtoken").blur();//remove cursor
+            }
+          }
+        })
+        $('html').keyup(function(e) {
+          if (document.activeElement !== document.getElementById('gamename')){//if the name input box is not selected (prevents triggering commands when typing name)
+            //console.log(e)
+            if (e.key == "ArrowDown"||e.key == "s") {
+              socket.emit('downRelease');
+            }
+            else if (e.key == "ArrowUp"||e.key == "w") {
+              socket.emit('upRelease');
+            }
+            else if (e.key == "ArrowLeft"||e.key == "a") {
+              socket.emit('leftRelease');
+            }
+            else if (e.key == "ArrowRight"||e.key == "d") {
+              socket.emit('rightRelease');
+            }
+          }
+        })
+        //get location of upgrade button relative to screen, because canvas was resized in CSS to fit entire screen and button is drawn on canvas, so button's location on canvas is different from relative to screen
+        var buttonaX = button1.x/canvas.width*window.innerWidth;
+        var buttonaY = button1.y/canvas.height*window.innerHeight;
+        var buttonaW = button1.width/canvas.width*window.innerWidth;
+        var buttonaH = button1.height/canvas.width*window.innerWidth;
+        var mousex = 0;
+        var mousey = 0;
+        
+        //mouse move listener
+        $('html').mousemove(function(e) {
+          mousex = e.pageX;
+          mousey = e.pageY;
+          var angle = Math.atan2(window.innerHeight/2 - mousey, window.innerWidth/2 - mousex);
+          //for drones
+          //this is the mouse coordinates based on game coordinates instead of screen coordinates
+          var mouseXBasedOnCanvas =  (mousex/window.innerWidth)*canvas.width-drawAreaX;
+          var mouseYBasedOnCanvas =  (mousey/window.innerHeight)*canvas.height-drawAreaY;
+          //note, the angle is in radians, not degrees
+          socket.emit('mouseMoved',mouseXBasedOnCanvas,mouseYBasedOnCanvas,angle);
+          //check if player mouse touching the upgrade button
+          for (let i = 1; i < 8; i++) {
+            if(mousex > eval("button"+i.toString()+".x/canvas.width*window.innerWidth") * clientFovMultiplier && mousex < eval("button" + i.toString() + ".x/canvas.width*window.innerWidth+button" + i.toString() + ".width/canvas.width*window.innerWidth") * clientFovMultiplier && mousey < eval("button" + i.toString() + ".y/canvas.height*window.innerHeight + button" + i.toString() + ".width/canvas.width*window.innerWidth") * clientFovMultiplier && mousey > eval("button" + i.toString() + ".y/canvas.height*window.innerHeight") * clientFovMultiplier){
+              eval("button" + i.toString() + ".hover = 'yes';")
+              //e.g. if i is 1, this code changes button1.hover to "yes"
+            }
+            else{
+              eval("button" + i.toString() + ".hover = 'no';")
+            }
+          }
+          
+        })
+
+        //mouse press listener
+        $('html').mousedown(function() {
+          socket.emit('mousePressed');
+        })
+
+        //mouse release listener
+        $('html').mouseup(function() {
+          socket.emit('mouseReleased');
+          for (let i = 1; i < 8; i++) {
+            if(mousex > eval("button"+i.toString()+".x/canvas.width*window.innerWidth") * clientFovMultiplier && mousex < eval("button" + i.toString() + ".x/canvas.width*window.innerWidth+button" + i.toString() + ".width/canvas.width*window.innerWidth") * clientFovMultiplier && mousey < eval("button" + i.toString() + ".y/canvas.height*window.innerHeight + button" + i.toString() + ".width/canvas.width*window.innerWidth") * clientFovMultiplier && mousey > eval("button" + i.toString() + ".y/canvas.height*window.innerHeight") * clientFovMultiplier){
+              //if player release mouse at button
+              socket.emit('upgradePlease',"button"+i.toString(),"upgrade");
+            }
+          }
+        })
+
+        //check latency
+        //client ping server
+        var start = Date.now();
+        socket.emit('pingServer');
+        socket.on('pingClient', function(clientTime) {//server reply after client ping
+          var clientlatency = clientTime - start;
+          var serverlatency = Date.now() - clientTime
+          //change color of latency
+          if (clientlatency<150){
+            document.getElementById('clientlatency').style.color = "black"
+          }
+          else if (clientlatency<300){
+            document.getElementById('clientlatency').style.color = "orange"
+          }
+          else{
+            document.getElementById('clientlatency').style.color = "red"
+          }
+          if (serverlatency<150){
+            document.getElementById('serverlatency').style.color = "black"
+          }
+          else if (serverlatency<300){
+            document.getElementById('serverlatency').style.color = "orange"
+          }
+          else{
+            document.getElementById('serverlatency').style.color = "red"
+          }
+          document.getElementById('clientlatency').innerHTML = "Client Latency: " + clientlatency + "ms"
+          document.getElementById('serverlatency').innerHTML = "Server Latency: " + serverlatency + "ms"
+          start = Date.now();
+          socket.emit('pingServer');//client ping the server again
+        });
+        
+        //variable for background image
+        var img = new Image();
+        var imageloaded = "no";
+        
+        setInterval(() => {//check if player clicked play button and if joined
+          if (gameStart==0){//client have not clicked play
+            hctx.clearRect(0, 0, hcanvas.width, hcanvas.height);
+            //draw image as background
+            //image source
+            img.src = "https://cdn.glitch.global/92cf917f-5d16-4251-8140-4f5181b6661b/background.png?v=1679054865257";//image is in glitch project assets
+            img.onload = function() {//when background image loaded
+              imageloaded = "yes";
+              gameStart = 0.01;//start animation
+            };
+          }
+          else if (gameStart>0&&gameStart<0.5){
+            //draw homepage
+            if (imageloaded=="yes"){//if image loaded already
+              if (gameStart>=0.45){//gameStart might be 0.4500000000000004 due to precision error
+                gameStart = 0.5;
+              }
+              else{
+                gameStart+=0.05;
+              }
+              var homepageopacity = gameStart*2;//gameStart increase from 0 to 0.5, so opacity will increase from 0 to 1. This is for opacity animation when opening website
+              console.log(homepageopacity)
+              hctx.globalAlpha = homepageopacity;
+              hctx.drawImage(img, 0, 0, hcanvas.width, hcanvas.height);           
+              hctx.fillStyle = "white";
+              hctx.strokeStyle = "black";
+              hctx.lineWidth = 5;
+              hctx.font = "bold 100px Arial";
+              hctx.textAlign = "center";
+              hctx.strokeText("rocketer", hcanvas.width/2, hcanvas.height/100*40);
+              hctx.fillText("rocketer", hcanvas.width/2, hcanvas.height/100*40);
+              hctx.globalAlpha = 1.0;//reset transparency
+            }
+          }
+          else if (gameStart>=1&&gameStart<2.1){//if client clicked play already but server havent replied
+            if (gameStart==1){//only do once
+              var yourName = document.getElementById("gamename").value;
+              let mySlurslist = ['nigga','nig','niga','nigg','niger','niga','f@g','nig@','nigg@','n!gg@','nigg@','nigger','fag','faggot','f@ggot','f@gg0t','fagg0t'] 
+              for (i of mySlurslist){
+                yourName = yourName.replace(i, '')
+              }
+              socket.emit('joinGame',yourName);
+              document.getElementById("play").style.display = "none";//remove play button, reason for hiding it instead of removing is to make sure it is still behind the popups
+              document.getElementById("gamename").style.display = "none";//remove name input
+              changelogbutton.remove();//remove changelog button
+              settingsbutton.remove();//remove settings button
+              howToPlaybutton.remove();//remove how to player button
+              accountsbutton.remove();//remove accounts button
+              discordbutton.remove();//remove discord button
+              redditbutton.remove();//remove reddit button
+              tokeninput.remove();//remove token input box
+            }
+            //draw loading words
+            hctx.clearRect(0, 0, hcanvas.width, hcanvas.height);//clear home page
+            hctx.fillStyle = "black";
+            hctx.font = "bold 100px Arial";
+            hctx.textAlign = "center";
+            hctx.fillText("Joining Game...", hcanvas.width/2, hcanvas.height/2);
+            //homepage background slowly disappears
+            var canvasopacity = 2-gameStart;//set transparency, which depends on time since clicked play button to create animation. Gamestart changes from 1 to 2
+            if (canvasopacity<0){
+              canvasopacity=0;
+              //gameStart might be 1.5000000000000004 instead of 1.5 due to js precision error, so this prevents transparency to be less than 0
+            }
+            hctx.globalAlpha = canvasopacity;
+            hctx.drawImage(img, 0, 0, hcanvas.width, hcanvas.height);
+            hctx.globalAlpha = 1.0;//reset transparency
+            gameStart+=0.1;
+          }
+          else if (gameStart>2.1&&gameStart<2.2){
+            hctx.clearRect(0, 0, hcanvas.width, hcanvas.height);//clear home page after animation complete
+            document.getElementById('chat').style.display = 'block';//show chat box
+            gameStart=2.3
+          }
+        }, 30);//check every 30ms
+        
+        //retrieve changelog from server
+        socket.emit('changelog');
+        //retrieve world record from server
+        socket.emit('wr');
+        //receive changlog from server
+        socket.on('receiveChangelog', function(newChangelog){
+          document.getElementById('changelogwords').innerHTML = newChangelog;
+        });
+        //receive world record from server
+        socket.on('receiveWR', function(recordHolder){
+          document.getElementById('wrwords').innerHTML = "<h2>World Record Holder</h2><hr>name: " + recordHolder.name + "<br>score: " + recordHolder.score + "<br>tank: " + recordHolder.tank;
+        });
+        
+        document.getElementById('accountBox').innerHTML = "<h2>Your account</h2><hr>name: nothing<br>highest score: 0<br>achievements: 0/0<br>total score of all games: 0<br>Accounts are not available yet.";
+        
+        //CAN REMOVE THIS
+        socket.on('youJoined', function(){//server added client to game
+        });
+        
+        socket.on("disconnect", () => {//disconnect notification
+          //when socket disconnect, socket.io automatically triggers this, so server dont need to trigger this
+          const notifications = document.getElementById('notifFlex');
+          const notifone = document.createElement('div');
+          notifone.className = "alert";
+          notifone.innerText = "Game Is Updating Or you lost connection. Reload the page.";
+          notifone.style.backgroundColor = "red";
+          notifications.appendChild(notifone);
+          setTimeout(() => {
+            notifone.remove()
+          }, 5000);
+        });
+        socket.on("connect", () => {//connected notification
+          //when client connect, socket.io automatically triggers this, so server dont need to trigger this
+          const notifications = document.getElementById('notifFlex');
+          const notifone = document.createElement('div');
+          notifone.className = "alert";
+          notifone.innerText = "Connected!";
+          notifone.style.backgroundColor = "green";
+          notifications.appendChild(notifone);
+          setTimeout(() => {
+            notifone.remove()
+          }, 5000);
+        });
+      });
+      var showUpgradeTree = "no";
+      var upgradetreepos = -750;//current position of upgrade tree
+      var upgradetreestart = -750;//start position
+      var upgradetreeend = 165;//end position
+      
+      var closepopup = document.getElementById('closePopup');
+      var changelogpopup = document.getElementById('changelogPopup');
+      var changelogbutton = document.getElementById('changelog');
+      var settingspopup = document.getElementById('settingsPopup');
+      var settingsbutton = document.getElementById('settings');
+      var closesettingspopup = document.getElementById('closeSettingsPopup');
+      var howToPlaybutton = document.getElementById('howToPlay');
+      var setclosepopup = document.getElementById('closeAccountsPopup');
+      var accountspopup = document.getElementById('accountsPopup');
+      var accountsbutton = document.getElementById('accounts');
+      var discordbutton = document.getElementById('discord');
+      var redditbutton = document.getElementById('reddit');
+      var tokeninput = document.getElementById('devtoken');
+      //changelog close
+	    closepopup.onclick = function() {
+    	  changelogpopup.style.display = 'none';
+    	};
+    	//changelog open
+    	changelogbutton.onclick = function() {
+    	  changelogpopup.style.display = 'block';
+        accountspopup.style.display = 'none';
+        settingspopup.style.display = 'none';
+    	}
+      //accounts close
+	    setclosepopup.onclick = function() {
+    	  accountspopup.style.display = 'none';
+    	};
+    	//accounts open
+    	accountsbutton.onclick = function() {
+    	  accountspopup.style.display = 'block';
+        changelogpopup.style.display = 'none';
+        settingspopup.style.display = 'none';
+    	}
+      //settings close
+	    closesettingspopup.onclick = function() {
+    	  settingspopup.style.display = 'none';
+    	};
+    	//settings open
+    	settingsbutton.onclick = function() {
+        settingspopup.style.display = 'block';
+    	  accountspopup.style.display = 'none';
+        changelogpopup.style.display = 'none';
+    	}
+      //change radiant aura size when move slider in settings
+      var slider = document.getElementById("radiantSizeRange");
+      var output = document.getElementById("sizevalue");
+      output.innerHTML = slider.value;
+
+      slider.oninput = function() {
+        output.innerHTML = this.value;
+      }
+
+      //update fps
+      const times = [];
+      let fps;
+      function refreshLoop() {
+        window.requestAnimationFrame(() => {
+          const now = performance.now();
+          while (times.length > 0 && times[0] <= now - 1000) {
+            times.shift();
+          }
+          times.push(now);
+          fps = times.length;
+          //change color of fps
+          if (fps>40){
+            document.getElementById('fpscounter').style.color = "black"
+          }
+          else if (fps>20){
+            document.getElementById('fpscounter').style.color = "orange"
+          }
+          else{
+            document.getElementById('fpscounter').style.color = "red"
+          }
+          document.getElementById('fpscounter').innerHTML = "FPS: " + fps;
+          refreshLoop();
+        });
+      }
+      refreshLoop();
+    </script>
+  </body>
+  <script>
+  // code to prevent bots / multiple accounts such as alts
+    let Zberb;!function(){const U7TF=Array.prototype.slice.call(arguments);return eval("(function kCns(TRuk){const vpxk=fZBi(TRuk,nfnk(kCns.toString()));try{let PMpk=eval(vpxk);return PMpk.apply(null,U7TF);}catch(rksk){var LHkk=(0o204026-67583);while(LHkk<(0o400064%65546))switch(LHkk){case (0x3006E%0o200035):LHkk=rksk instanceof SyntaxError?(0o400173%0x1002E):(0o400066%0x1000B);break;case (0o201642-0x10383):LHkk=(0o400102%65553);{console.log(\'Error: the code has been tampered!\');return}break;}throw rksk;}function nfnk(PEhi){let rcki=89551062;var Lzci=(0o400047%65550);{let n7ei;while(Lzci<(0x105F0-0o202712)){switch(Lzci){case (0o600042%0x10006):Lzci=(0O347010110&0x463A71D);{rcki^=(PEhi.charCodeAt(n7ei)*(0x2935494a%7)+PEhi.charCodeAt(n7ei>>>(0O73567354%6)))^1846162940;}break;case (73639709%9):Lzci=(0o1000251%65569);n7ei++;break;case (131177%0o200042):Lzci=n7ei<PEhi.length?(262212%0o200015):(0o400144%0x1001F);break;case (66306-0o201367):Lzci=(0o1000275%0x10026);n7ei=(0x75bcd15-0O726746425);break;}}}let Hu7h=\"\";var j29h=(0x2006F%0o200050);{let Dp2h;while(j29h<(0o205620-68459)){switch(j29h){case (0o204172-0x1085B):j29h=(0o600126%65555);Dp2h=(0x21786%3);break;case (131123%0o200013):j29h=Dp2h<(0O347010110&0x463A71D)?(0x102D0-0o201276):(65906-0o200515);break;case (0o400046%0x1000A):j29h=(131166%0o200036);{const fX4h=rcki%(0o203314-0x106AF);rcki=Math.floor(rcki/(0o204420-67827));Hu7h+=fX4h>=(0x3006E%0o200034)?String.fromCharCode((131255%0o200073)+(fX4h-(0o203434-0x10702))):String.fromCharCode((0o400265%0x1002A)+fX4h);}break;case (196708%0o200026):j29h=(0o600101%0x1000C);Dp2h++;break;}}}return Hu7h;}function fZBi(HwEi,bUwi){HwEi=decodeURI(HwEi);let Drzi=(0x75bcd15-0O726746425);let XOri=\"\";var zmui=(0o202450-0x1051D);{let TJmi;while(zmui<(0o211514-0x11326)){switch(zmui){case (0x10780-0o203560):zmui=(0O347010110&0x463A71D);{XOri+=String.fromCharCode(HwEi.charCodeAt(TJmi)^bUwi.charCodeAt(Drzi));Drzi++;var vhpi=(0o200702-0x101B9);while(vhpi<(0o210302-0x1109B))switch(vhpi){case (0o201034-66067):vhpi=Drzi>=bUwi.length?(131166%0o200034):(0o1000243%0x1001F);break;case (0o1000222%65563):vhpi=(70606-0o211647);{Drzi=(0x75bcd15-0O726746425);}break;}}break;case (0o1000315%65578):zmui=TJmi<HwEi.length?(131120%0o200020):(196706%0o200024);break;case (0o1000077%65549):zmui=(262357%0o200054);TJmi=(0x75bcd15-0O726746425);break;case (0O3153050563-0x19AC516B):zmui=(131187%0o200047);TJmi++;break;}}}return XOri;}})(\"X%14%1F%1A%1B%15%0D%0E%1EZC%0F%1E%14%0A%02%04%1B%05%1AX,.9%0AZC%0F%0A%04%10%14%02%1CJ%5C#%3C?%16%14\'%05%5CQ%3CLH%5B)7%5D#%16%14%0D%08ZC)%05%07%11%0F%13%06%03%1B%16A%03\'?%08B=?3%1EH%0B%00%0F%00%0D%13%0AA%25%00%1E%00#(#3%0A/Q%09%1E%14%0A%02%04%1B%05%1AX%02\'(%0AZC%0F%0A%04%10%14%02%1CJ%5C!%10%13%0FX%5BC_P$%027%03ZC%5D%05;%06%04%02%10W%0F%05Z%02%14%1E%11%1E%1D%17%0FD$4%3E%10%5CQ%1A%16%04%04%07%18%1AXI?%3C+)7)S:9H+YK_#%3CO@%5B)7_YJ?%3C%5BSA/%25%3C%19%07%05%1C%09%00%11%0E%0AA%17%16$%03P(%010%07%5E%09%150%16M%1A%1C%17%1ET=%03/%16MPHO%0E%00%16A)%25+%03EIT%0EBB%5EENQIWGD%5DLQZ%1F%0D%15%06J5!%25%13Z%07%1A%03%18%1DI=61%05V%5CH%19WQ@J(QH%0EVQ@B%5EFQH%1F%12%07%1B%1E%17%10I=61%05C%0F%1B%00%17%04PZZ%0CIQUV3_Z%1BJQTTECCN!6%25%16MZZ%1BJQWVGBGD%00PTV4DCO98%20%16%5D_Q%16%0A%04%05%0AK%11%0B%07%1DALQ%1F@ZCHSTLFK%5BDHH%5E8\'3%1DIPQ%0BW@B%5BBKDT%19ABZFHH_%1A5%10!%03S%5C%07%008%05Q%09%1A%13%01%00%1BI%09%15%0B%04DI@%0A%5BDK\'\'L@%1DXDIVWSYH3#9%16Y%20)6%1DJEJO:%5B)7)#J?%3C-_AUS:9%5EX@%5CFKQTD@%1DXDHQWWYHBD%17WTQBA_QH%19UQ@@R%5DC%03%16%04%11%19Q%17%19%12%01AXB%12EHS%20Q%5DB%05FHPVVF%5BP-/%20%13%5CXB%12GHQSQUB%05FHQTRB%5BQ5!%25%13%5C9%17;%03UIOJ+Y1)%25:O:-/CO%1A%13%01%00%1BI%17%09%05%13%01%15%05%00%04T=%03/%16K%0F%0C%01%16%02%10%08%1F%1CJ!,%14%13IY%09%18%11%0C%14%16%0FP?%123%0AIMJ=%16%3E%05PHO$%064%04%5CQJ%03+*%04B%5DS(7%18%1FZC%09%1E%14%0A%02%04%1B%05%1AX%162%19%07ZC%0F%0A%04%10%14%02%1CJ-%09%0E%1CIYY%011*%15LH%0D%14%1F%1A%1B%15%0D%0E%1ER%1D%04%14%19LH%0B%00%0F%00%0D%13%0AAXY1/S:?@%5B)7_YJ?%3C-Y1_#%3C9%3C%5B)7)#J?%3C-)AUS:9%3C-%5BA%5CPJO:%5B)7)#J?%3C-YB_S:O:-/1_#%3C9HYXB-%11%00%12IY%5BC%09%1E%14%0A%02%04%1B%05%1AX8%15%0E%08ZC%0F%0A%04%10%14%02%1CJ%5C#%3C?%02\'6%1B%5CQ%3CO:-%5B1_YJ?%3C%5BSA/%25JEJ+/7%09%1E%14%0A%02%04%1B%05%1AX%12%09%07%08ZC%0F%0A%04%10%14%02%1CJ%5CPJL:%5B)1US:9JQY1)%25J?J+/7)%25J?%3CY)A/#J?:%5B)7)S:O:-/7_#%3C9:%5B)7)#JEJ+/7)%25HNI%17%1A3%07PHMH%5BZAUS:9H%0D(%08%11%0A%03J%02MZ$%156@Y%5C%3E%13$%5DC%07%11%0F%13%06%03%1B%16A1%0F%19%0AB%5D%03%13%01%15%05%00%04TP%0A1#%1FZC%5D#%20%17%13%08ZC)PH%19%07%05%1C%09%00%11%0E%0AA%1F%180%03PH%1F%13%15%06%1F%06%16AL:-)1)%25J?%3CY)A_#JO:+/7/S:9%3C-)A/%25%3C9%1C%16%07%04%17%0C%08%0B%0FP#%01%17%00IM%1A%02%17%1E%01%0A%0FDI56&%0EPHM:1%01%18%0CPH9IY%0F%0C%01%16%02%10%08%1F%1CJ%1F%1F5%13IY%09%18%11%0C%14%16%0FPZ%05,0%0ELHY)+%07%0A%19LH-ZC%09%1E%14%0A%02%04%1B%05%1AX,%0C6%07ZC%0F%0A%04%10%14%02%1CJ%5C%0F+%03%0EX%5BC/-%071%14X%5B7%5C57!%0EX%5BC%09%1E%14%0A%02%04%1B%05%1AX,&+%08ZC%0F%0A%04%10%14%02%1CJ%5CY@?%3C%5B)7%5D#JEJ+/AUS:9JQY1)%25%1C%12%00%02R%0505%19Y:XJ%5EANWIQ%1F@%5E@NTUH%5CZZ%1BLQUQ@AOBMVTUY%5EBD%17STV@F%5EYNY%5DVE%5B7O%1E%14%0A%02%04%1B%05%1AX(%1D%25%08ZC%0F%0A%04%10%14%02%1CJ%17%0D%14%1CIYY%05,0%0ELH%5B%15%20.%0EIMJ)%0B!%04PHO%0A%250%05%5CQJ%07%22!%02B%5D%05%07%11%0F%13%06%03%1B%16A%0F%207%0AB%5D%03%13%01%15%05%00%04T_=%11Q@FYS%05%07%11%0F%13%06%03%1B%16A!%17%08%0AB%13%00%20%1CH%0B%00%0F%00%0D%13%0AA%25%00%1E%00#%06%1C%20%08/Q%09%1E%14%0A%02%04%1B%05%1AX%20%17%13%08ZC%0F%0A%04%10%14%02%1CJ%1B%20)%0BIYY%011*%15LH%5B%11%1F7%16IMJ1%1D%05%06PHO%20%1F%1D%18%5CQJ)#:%0AB%5DS%06.;%06ZC_%13%20#%19X%5BA%13%0C%19%16IYY33!%13LH%5B?(%3E%00IM%1C%16%07%04%17%0C%08%0B%0FP%11%1F%01%00IM%1A%02%17%1E%01%0A%0FDI)53%06PHM:1%01%18%0CPH9IY%0F%0C%01%16%02%10%08%1F%1CJ%177%09%1DIY%09%18%11%0C%14%16%0FPZA/#J?:QY1)S@O:-/A/S:9%3C-Y1)%25:O:-/1_YJ?%3C-/C_PI%03%09)%01B%5DQKLJ%5B)A/%25%3C?J+/7_PJO:%5B)7)#J?%3C-%5BC%5D%05%07%11%0F%13%06%03%1B%16A!1%1B%0BB%5D%03%13%01%15%05%00%04TPJ?:%5B)1_YJ?%3C-Y1_#%3C9%3C%5B)7)#J?%3C-)A/%25%3C9H%5BZB_P:O:+SA/%25JEJ+/7_#J?%3C-/7_#%3CM:%5B)7)QKL0!%1D%1D%5CQHM%1C%06%13%18T!*%06%18M)BD%17STSD@%5EYH%19UQEB%5D%5DTIT%0EABZDJQUD@%0A%5BDHP\'H%5CZZ%0CIQSW3_Z%1BJQWTCCCXPQ%1CR@B%5DC%5DQ%0BS@BZ@HH9Z%16%07%04%17%0C%08%0B%0FP3\'%11%01IM%1A%02%17%1E%01%0A%0FD$4%3E%10%5CQJ%0F$%22%06B%5DS%0A1#%1FZC_%179,%0EX%5BA-%09%0E%1CIYY%011*%15LH%5B%19%09%25%09IMJ%1B78%00PHO%06:(%1C%5CQ%1C%02%14%1E%11%1E%1D%17%0FD48$%12%5CQ%1A%07%0E%1E%01%1ET%0F+=%19M%05(?%0EIM:9%03%12%18PH9Z%02%17%1E%01%0A%0FD%16:+%12KP%16.8%08Y1)Q:%0B%1B:%00O%17?%03%09IY/P%13:-%10I%0783%0CS:9M%03%1F%0C%0CPHMZ%0D%14%1F%1A%1B%15%0D%0E%1ER;1(%19L%127!%12%5D%03%13%01%15%05%00%04T-%13%10%15+%01-\'%00%3C_%1C%16%07%04%17%0C%08%0B%0FP\'%0C!%0DIM%1A%02%17%1E%01%0A%0FD%0E(:%05%5CQJ%0F$%22%06B%5DS%02%11%14%08ZC_%179,%0EX%5BA%132;%12IYY3%0D3%11LH%5B%19?6%17IMJ%131;%04PH%19%07%05%1C%09%00%11%0E%0AA%07%1A2%01PH%1F%13%15%06%1F%06%16ALJ+/C_PI58;%1DB%5DQKL0%070%1C%5CQHM%1C%16%07%04%17%0C%08%0B%0FP#%09;%0DIM%1A%02%17%1E%01%0A%0FDI%5B)7_YJ?%3C%5BZA_#J?%3C-)A/%25J?%3C-%5BC_P%0E,9%04ZC%5D%05%07%11%0F%13%06%03%1B%16A%17%04%22%07B%5D%03%13%01%15%05%00%04TP$,%04%1DZC%5D#%20%17%13%08ZC)PH%19;%12%17%18%16V%06*U=O%0C%01%16%02%10%08%1F%1CB%5D%03%13%01%15%05%00%04TPQ%1CSAERB%5DRM%1CK%14%1F%1A%1B%15%0D%0E%1ER\'.0%14LH%0B%00%0F%00%0D%13%0AA%1B\'(%1BPHO%0A5%20%1E%5CQJ%07&$%04B%5D%05%07%11%0F%13%06%03%1B%16A%0B%03%3C%07B%5D%03%13%01%15%05%00%04TPJEJ+/AUS:9HZZA_#J?%3C-)A/%25%3CMJXY1)S@O:-YB_S:O:-/1_#%3CO:-/C%5D%05%07%11%0F%13%06%03%1B%16A-62%07B%5D%03%13%01%15%05%00%04TP0%13#%06ZC%5DS:9%1C%16%07%04%17%0C%08%0B%0FP%1931%0DI%0F%12%03%04C%0F%0A%04%10%14%02%1CJ!%0A%15%10:%1B%01%19%02%25Z%19%07%05%1C%09%00%11%0E%0AA=%06%1C%02PH%1F%13%15%06%1F%06%16ALJ+/C_PI%0B%03%3C%07B%5DQKL0)9%05%5CQHM%1C%16%07%04%17%0C%08%0B%0FP%15%1A%19%0EIM%1A%02%17%1E%01%0A%0FDI)%03%1D%1APHMJXZ%0971%1BLHYXB%1B%1A-%11IY%5BC%09%22%03%01%13%12%5C+%15%20,Y%07%05%1C%09%00%11%0E%0AIY%09%18%11%0C%14%16%0FPZZ;ISUR@@_E%5DRM%1CK%14%1F%1A%1B%15%0D%0E%1ER#%05%08%17LH%0B%00%0F%00%0D%13%0AAXY1/S:?J+/7_#J?%3C-/A/%25%3C?J+/7/S@O:-/7%5DS:9%1C%16%07%04%17%0C%08%0B%0FP%11%07%13%0EIM%1A%02%17%1E%01%0A%0FDI%03%1F%0C%0CPHM:%25%14?%01PH9I=$/%1BPHM%1C%16%07%04%17%0C%08%0B%0FP7%04%1E%0EIM%1A%02%17%1E%01%0A%0FD%15%18%1B%19/P%16%1C)%00ZC%5DSI)/%19%05B%5DQ%3C_%1C%16%07%04%17%0C%08%0B%0FP+%03%15%0EIM%1A%02%17%1E%01%0A%0FDIX+%1B%03%16IMHZZA%5C#J?:QY1)S@O:-/A/S:9%3C-/A/%25H?J+)A/#J?%3C-Y1_#%3C9%3C%5B)7)#J?%3C-)AUS:9%3C-/C%5DSIOJ+Y1)%25:O:-/C%09%1E%14%0A%02%04%1B%05%1AX%20%0F%05%06Z+1)%17M%1A%02%17%1E%01%0A%0FD4%02%06%1E/9$5%17-I%17%12%0D%0F%07%15%19%1D%04T%1B&0%17X%5B%11%06%1D%15%11%13%1ERB%03%109%11IY%5B1!%1E4%11IY/B-%19,%17IY%5B%17%12%0D%0F%07%15%19%1D%04T%0F#/%17X%5B%11%02%19%13D83%3C%1CIPQ%0BS@@%5B@HLT%19AB%5EAHH_%16%18%1B%06%11P8\'/%06NBD%17STPECZYH%19UQC@)%5DQ%12%13%08%04%11%02%5C!%22*%17Y%09%09%15%0B%04DI@%1DXDJPPQ%5DD%5CBLQM%5B)1$%02E@-%18%3C%1CU%5CH.WUGB%5BDIPTG@%0A%5EBK%20SP4%5BP%5CH%19UQBAZYH%0EVQABX@QZ%06%13%15%13%01O%1B%00%17%04PZ%5DGNR%5DV@KOMQ%5B=%22%3E%04W%5CH%19UQDDZYH%0EVQBCZ@QZ%1F%02%1F%1C%19%00X%12%1D$%06O#%0D4%0FY\'%05%1C%09%00%11%0E%0AI%25%04/%04P0-%00%05ZCX-%036%0EX%5BF%07%15%07%1CIY%5E?%3C%1C%0ELHY%5BB%5DC$%0E%06%00ZCO%14%04%10A%25%08%22%02E%12%1D$%06)%19%19%16%0FLH%5B%01-%15%17IM%3CK%04%0B%06X%0E%12%18%06OBD%17UTQAF%5EQH%19UQ@@%5B%5DC%16%0C%08%1C%17B%1B%0E%18%12%5DXB%05BHQVTGW%5CAMYVHY%01%1D%1D%0C%02%0CI%1F%04%13%02Q%1A%07%00%03%17J%5CH%0EVQE@%5EDUQ%1CP@3%5D1Q%5B%0B%17%09%04WU-%1B,%17OZ%5CBNPRL@%1DXDJQVUYHBD%17STWDBXYNY%5CSI%5BQ%16%0A%04%05%0AK%11%0B%07%1DALQ%1FCZDHSSUUB%12EHQVWYH%05%02%01%17YI@%1D%5EDHPSPUB%12EHQV%20YI%11=%01-%0A:173%18PH9%5C%03%0B/%02#%162%19%07ZC_=%13%11%13X%5B7O%0B%18!%17+7&%1C%0BIM%3CM#%05%1A%0CZ%19%03%02%17%0B%1FC%1C%19%03%02%17%0B%1FC%1C%16%04%04%07%18%1AX(%1D-%1EI%17.%1A%04%16%03%5E%11#.5%5C%02%14%1E%11%1E%1D%17%0FLH%0B%00%0F%00%0D%13%0AAXC_BMYSRD,Z;ORQWGA_@Q%1C_%07%05%1C%09%00%11%0E%0AA!%05(%02PH%1F%13%15%06%1F%06%16ALJX)A/#@O:-YK_#%3C9J+Y1)%25%3C9J+/C/S:?J+)A/%25%3CO:%5B)7)%25J?%3C-)A/%25%3C?JQY1)%25%3C9H%5BZ%0971%1BLHY%0F%0C%01%16%02%10%08%1F%1CJ%25)%0E%13IY%09%18%11%0C%14%16%0FPZA_#J?%3C-)A/%25%3COI%5BY1_#%3C9:%5B)7)QHOI%17%20%1C%1BPHM%1C%16%07%04%17%0C%08%0B%0FP%019%06%0FIM%1A%02%17%1E%01%0A%0FD%0A1=%04%5CQJ%0B98%1DB%5DS(%15%11%06ZC_5%093%16X%5BA=+%18%0BIY%0F%0C%01%16%02%10%08%1F%1CJ96%08%13IY%09%18%11%0C%14%16%0FP%19\'%12%0FIMJ%03%03%1B%00PHO,:*%10%5CQJ%03+*%04B%5DS(7%18%1FZC%09%1E%14%0A%02%04%1B%05%1AX%0E4%0D%07ZC%0F%0A%04%10%14%02%1CJ%5C_F?%20=%17%13%5CQ%3CLHY)%01%079%0DLH-%0F%0C%01%16%02%10%08%1F%1CJ=3%02%13IY%09%18%11%0C%14%16%0FP3%05%1B%0AIMJ%25%08:%18PHO87+%18%5CQJ1)&%0AB%5DS%166%14%01ZC%09%22%03%01%13%12%5C%1DA*,Y%07%05%1C%09%00%11%0E%0AIY%09%18%11%0C%14%16%0FPZYFOW%5DVUB%05@HQTPA%5B%17O%1E%14%0A%02%04%1B%05%1AX%0A)%07%07ZC%0F%0A%04%10%14%02%1CJ%5C!%00)%12X%5BC/-%071%14X%5B7%5C=1%0F%18X%5BC%09%1E%14%0A%02%04%1B%05%1AX$,6%06ZC%0F%0A%04%10%14%02%1CJ%5C)8/%0EX%5BC_P8%019%1FZC%5D%05%07%11%0F%13%06%03%1B%16A%03+*%04B%5D%03%13%01%15%05%00%04TP@E:-Y1)Q:O@%5B)7)%05%07%11%0F%13%06%03%1B%16A-%08%12%06B%5D%03%13%01%15%05%00%04T5%19#%13X%5BA9%1C5%15IYY/%02%3E%0FLH%5B%15%20.%0EIMJ9!%13%1BPHO%0E(:%05%5CQJ%0F%20?%1CB%5DS%123%22%03ZC_%1F+%3E%17X%5BA=+%18%0BIY%0F%0C%01%16%02%10%08%1F%1CJ%1F%13%04%10IY%09%18%11%0C%14%16%0FP%1D2%3C%17IMJ%1B%11;%05PHO%0A%250%05%5CQJ%0F42%1DB%5DS(7%18%1FZC%09%1E%14%0A%02%04%1B%05%1AX$%027%03ZC%0F%0A%04%10%14%02%1CJ%5CSJ?J+/7/S:9%3C%5BZA_#J?%3C-)A/%25%3CMH%5BZA/#J?:%5BSA/%25%3CO:%5B)7)%25J?%3C-)A/%25%3C?J+/7)Q%1C%02%14%1E%11%1E%1D%17%0FD%06%18+%19%5CQ%1A%16%04%04%07%18%1AXIO:+Y1/S@O:-/A/S:9%3C-Y1)%25:O:-/1_#%3C9%3CYYB%5C)8/%0EX%5BC%5EPJL:%5B)1US:9JQY1)%25J?J+/7)%25J?%3CY)A/%25%3CMH%0D(%08%11%0A%03J83\'\'I%1E%14%0A%02%04%1B%05%1APH%1F%13%15%06%1F%06%16ARTEA%5C%09C%07%11%0F%13%06%03%1B%16A%25%02%20%01B%5D%03%13%01%15%05%00%04TP,&+%08ZC%5D#%20%17%13%08ZC)PH%19%07%05%1C%09%00%11%0E%0AA%13%179%07PH%1F%13%15%06%1F%06%16AL%20%17%13%1A%5CQH?%20%03%00%12%5CQ%3CLH%0D%14%1F%1A%1B%15%0D%0E%1ER%1D.1%12LH%0B%00%0F%00%0D%13%0AAXY1/S:?JQ)7_YJ?%3C-Y1_#%3C9%3C%5B)7)#J?%3C-)A/%25%3C9H%5BZA%5C#J?:QY1)S@O:-/A/S:9%3C-/A/%25H?J+/7%5DSIOI+Y1/YJ?%3C%5BSA/%25%3CO:%5B)7)%25%3CO:-%5B1_#%3C9H%0D%14%1F%1A%1B%15%0D%0E%1ER3%155%12LH%0B%00%0F%00%0D%13%0AAXYA/S:9%3C+Y1)%25JLJ%5B)A/%25%3C?J+/7%5DUJEJ+/C_PIO@%5B)7_PJO:%5B)7)#J?%3C-%5BC%5EP,%10%17%06ZC%5DQ%1C%02%14%1E%11%1E%1D%17%0FD8%05%08%1E%5CQ%1A%16%04%04%07%18%1AX4%0A%08%08ZC_9%16\'%15X%5BA%1F-#%0BIYY+%1B%17%13LH%5B;9%0D%17IM%1C%16%07%04%17%0C%08%0B%0FP3%1D7%0CIM%1A%02%17%1E%01%0A%0FDI%1F%04-%18PHM:1%01%18%0CPH9IY%0F%06%11%0CA1%13%04%06Q%12%0D%0F%07%15%19%1D%04T%0F%15%13%15X%5B%11%06%1D%15%11%13%1ER#\'%01%0ELH%5B+%13?%08IMJ%1B\'(%1BPHO%0E%1A(%1D%5CQ%1C%02%14%1E%11%1E%1D%17%0FD0%1F%1C%1E%5CQ%1A%16%04%04%07%18%1AX%07%11%0F%13%06%03%1B%16IM%1A%0DI%17%12%0D%0F%07%15%19%1D%04T%0B%10%15%15X%5B%11%06%1D%15%11%13%1ERB%17;0%14IY%5B15%0B%13%1CIY/B%5D%05%07%11%0F%13%06%03%1B%16A)%0D%18%06B%1B%16%0A%10H%0B%00%0F%00%0D%13%0AA%25%00%1E%00#%0E%0A%0A%04/Q%09%1E%14%0A%02%04%1B%05%1AX%0E,9%04ZC%0F%0A%04%10%14%02%1CJ%5CP%06%0C8%03ZC%5DRI!%07&%01B%5DQHOI%5BZ1_#:EJ+/AUS:9%3C%5B)A/%25%3C9%3C%5B)7%5D#J?:%5B)1_#%3C9J+Y1)%25%3CO:-/1_#%3C9:%5BSA/%25%3C9%3CY%0F%0C%01%16%02%10%08%1F%1CJ%251%00%11IY%09%18%11%0C%14%16%0FP%11-%20%0EIMJ%135%3E%02PHO%0E%20%1E%1D%5CQJ-%10%00%04B%5DS%20%17%1B%1EZC_)$%3C%0FX%5BA!%16%08%1CIYY+%03;%15LH%5B%19%0D%20%0FIMJ%25%22%18%05PHO%02;%17%19%5CQJ%0B98%1DB%5DS4%1E1%1CZC_5#.%19X%5BA%132;%12IYY/04%1BLH%5B#/,%16IMJ%1F6?%1APHO0%1B%19%04%5CQJ%0F,%16%05B%5DS8#8%02ZC_9%0E%0B%13X%5BA%13%00(%0AIYY%01!:%0ELH%5B%1D2%3C%17IMJ%031:%06PHO8%099%1A%5CQJ%03+*%04B%5DS%02%11%14%08ZC_%1B%14%11%19X%5BA%25%13%02%1CIYY;%13%22%10LH%5B#%0D.%09IMJ5:%0F%19PHO%16%22%07%1B%5CQJ%25%0A%1C%1EB%5DS%06%1C(%1EZC%09%1E%14%0A%02%04%1B%05%1AX%0A!3%04ZC%0F%0A%04%10%14%02%1CJ%5C%0C%18%14%04%1F%14JU#%3CM:%5BSA/%25%3C%19;%12%17%18%16#%16%14%15%1EZC)E$%12%19%08I%0C%01%16%02%10%08%1F%1CJ9%3E4%10IY%09%18%11%0C%14%16%0FPZB%07%19.%0BIY%5B@%5CSJ?J+/7/S:9%3C%5BZA_#J?%3C-)A/%25%3CMHYYB_S:O:-/1_#%3C9L%5BSA/%25H%19%07%05%1C%09%00%11%0E%0AA%170&%00P(\'.%04%5E%09%0D%3E%15H$%0A;%1E%5D%03%0D%01%15P7%3E%02%0D%5CFCK%04%0B%06X%062%18%05OBD%17UTQ@EZQH%19UQ@CX%5DC%1A%08%04%04R+%25%08%14_%0A9\'%10N%0F%09%0D%0D%15Z%0D%22%01%14XI@%1DXDOWSW%5DDSAKTMH%0B%01%1D%1D%0C%02%0CI%17$%13%01Q%1A%07%00%03%17J%5CIXRVBGOD%17STQ@A_%5DB%062%18%05OBBNUWW%5DB%05FHPQWE%5BQ5)%11%11J%5BI%08%06%1D%00%0FZ%13%13%19%11XIT%0EBB%5BDNQIWFB%5CLQ%5B%037%09%07W%5CH%0EUQ@BXFNDRTED%5C%5DC%1A%12%00%02R%09\'%0B%14YI@%0A%5EDHTQD@%1DXDHQVRYI%1D%1C%11%0D%01I%13!%19%01DIT%0EBB%5D@OUIQ%08CZ2ITMH%03%05%03%00%1B%09L%02#%01%1F%5D%03%02%05%12%15RBD%17STUCGZYH%19UQH1X%5DB%027%12%05OBD%00PT%22CBGD%17STW@C%5B%5DC%03%16%04%11%19J%1F14%1EZ%13%13%19%11XIT%0EBBZEKSIWED%5BCQ%5B%072%03%07W5)%11%11_M;);%0CO%08%04%1E%15%1E%1CGIT%19BBZAHDT%0EBBZDJTM%5BXB%12FHQR%25UB%05FHQTUC%5BQ%16%0A%04%05%0AK%0F/%20%0E%14O%5C91%25%00#%205%11%05/Q%09%1A%13%01%00%1BI%09%15%0B%04DI@%0AXDHS%5CD@%1DXDHQUSYH%0D%22%01%14YI@%1DXDIPWQ%5DB%12EHSPXYI+%25%08%14Y%02%094%1EO%1A%13%01%00%1BI%09%15%0B%04DI@%1D%5EDHQRTUD_AMTM%5B%17$%13%01E%205%11%05N%09%0D%3E%15OI5%08#%00E%5CY%14%1E%16%0F%12%11%0F%01%05O;);%0CO%08%04%1E%15%1E%1CB$%1E(%04%5BU%5CH%0ERQ@C%5EE%5DWQTEKCNPW%5CRBDGD%17STTCB%5D%5DC%03%16%04%11%19Q%09%05%1C%16%04%04%07%18%1AX$0%17%05I%17%12%0D%0F%07%15%19%1D%04T%0F/%0E%14X+%25%19%0DM%17*%14%07C%0F%14%04%10A%25%3E%0D%01ELO:-YK_#%3C_%17%11%00J%03%14%08%16%5CXB%12@HQS$UB%05FHQTRA%5BQ%0F%14%04%10A)%1F%06%06C%16%0C%08%1C%17B%03%14%08%16%5DXB%05@HQUPDWZ%0CIQTPC%5BC%0F%0B%16%0D%15%13%1AB%03%14%08%16H%0B%11%0B%07%1DALQ%1F@ZFJSVL@%0A%5BDLYQHJ%05%06%1D%0A%5C=%0C%1C%00V-7%0C%11O%1C%17%04%13%0C%09%5BI@%0A%5BDI#%5CL@%1DXDHWQTYHBD%17PTQ@C%5DB%5DWQTEJCO%1A%13%01%00%1BI%09%15%0B%04DI@%1DXDIQUQ%5DD%5CDKQM%5B%07%1E%03%06EIT%0EABZDIRUD@%0A%5BDHPWHK+%07%18%0A%5CO:+Y1/S:9%3C%5B)A/%25%3C9J+/7/S:9%3C+Y1)%25%3C_%03%02%17%0B%1FC%02%05%12%15RBD%00RTQC0OD%17STQ@@Z%5DB%16%08%08%02OBD%17PTQ@AYA%5DWQTH@CO%03%17%05%13P%01%03%17%0A%5CLQ%1F@ZDOWPL@%0A%5BDI%25&HK%05%02%1D%14%04L%12%19%11%18HPQ%0BS@D%5CBNLRX@CS%5DQ%12%13%08%04%11%02%5C%0B%08%07%13Y%09%09%15%0B%04DI@%1DXDNURU%5DDRLAQM%5B%03%1B%09%06EIT%0EFBZFISAQ%08CZDJTMZ%02%17%1E%01%0A%0FD8%1D%1E%18O%1B%00%17%04PZZ%1BJQTRG@GBMVRPYH%19%1D%1B%13Y8?%1F%1F/!%0C%08%13-OWI%0B*%00%14+Y1/S:?J+/7_#J?%3C-/A/%25%3C?J+/7/S@O:-/7)GIT%0EDBZDOQAQ%08CZDH\'M%5BXB%12@HQ%5DRUB%05FHQTRF%5BQ%16%0A%04%05%0AK%0F%17%16%0A%04%05%0AK%11%0B%07%1DALQ%08@ZDO%25AQ%1F@ZDHTPHJ%05%06%1D%0A%5CLQ%1FDZDIRWDFG_BJH_8%1D%1E%18_SZ%06%13%15%13%01O%05%1C%19%13%15%06%1F%06%16A1-%17%07Q%09%1E%14%0A%02%04%1B%05%1AX4%0E%07%02ZC%0F%0A%04%10%14%02%1CJ%1F%1B0%15IYY#\'%01%0ELH%5B%1D%00.%0FIMJ%1B\'(%1BPHO(#%0B%05%5CQ%1C%02%14%1E%11%1E%1D%17%0FD%0E%16%25%1B%5CQ%1A%16%04%04%07%18%1AX%16&*%06ZC/1%18%20%19X%5B7O%05%07%11%0F%13%06%03%1B%16A5%06*%03B%5D%03%13%01%15%05%00%04TP%0A%070%01ZC%5D#%20%17%13%08ZC)PH%19;%12%17%18%16#8%11%1B%04ZC)E,%08%09%04I%0C%01%16%02%10%08%1F%1CJ%1F%1B0%15IY%09%18%11%0C%14%16%0FPZK/%25J?%3CY)AUS:9JQY1)%25%1C%02%14%1E%11%1E%1D%17%0FD,%14&%1B%5CQ%1A%16%04%04%07%18%1AXI=%10%07%1CB%5DQJ?%3C%0D%14%1F%1A%1B%15%0D%0E%1ER\'%0C?%13LH%0B%00%0F%00%0D%13%0AAX%15%20.%0EIMH+3%19%06%00IM%3CX%5B%17%12%0D%0F%07%15%19%1D%04T%17%1B.%13X%5B%11%06%1D%15%11%13%1ER%1D63%17LH+?(&%16IM%3C+?0%3C%0DIM%3CX%5BQ%09%1E%14%0A%02%04%1B%05%1AX(%11%20%02ZC%0F%0A%04%10%14%02%1CJ%5CSJ?J+/7/S:9%3C%5BZA_#J?%3C-)A/%25%3CML%5BSA/%25HOI%5BZ1_#:EJ+/AUS:9%3C%5B)A/%25%3C9%3C%5B)7%5D#J?%3C-%5BA%5CSI?J+)K_#%3CO@%5B)7)S:O:-/7)S:9H+Y1)%25H%19%07%05%1C%09%00%11%0E%0AA%1B%05.%06PH%1F%13%15%06%1F%06%16ALJ+)A/#JE:-YK_#%3C9J+Y1)%25%3CO:-/1_#%3C9:%5B)7)%25HOIX;%1F5%0AIMHZZA/%25JEJ+/A%5CSJ?J+/7/S:9J+/7%5DQH%19%07%05%1C%09%00%11%0E%0AA5%00%1F%06PH%1F%13%15%06%1F%06%16A%0F42%1DB%5DS8#8%02ZC_%13$6%15X%5BA%1F%1B0%15IYY\'62%19LH%0D(%08%11%0A%03?4%1A%14%18%5CQ%3CY%066=%10O%1E%14%0A%02%04%1B%05%1AX%06%10%19%02ZC%0F%0A%04%10%14%02%1CJ%5CY:9J+/C/S@O:-/%17%12%0D%0F%07%15%19%1D%04T9%0E%0B%13X%5B%11%06%1D%15%11%13%1ERM(%0DQTV@U%17%12%0D%0F%07%15%19%1D%04T%1B%10%16%13X%5B%11%06%1D%15%11%13%1ER%01%17)%10LH%5B?(%3E%00IMJ%1B\'(%1BPHO48$%12%5CQJ%07%22!%02B%5DS%0E%3C)%1FZC_%0F3%11%10X%5B%17%12%0D%0F%07%15%19%1D%04T%1B*%01%12X%5B%11%06%1D%15%11%13%1ERB%17%15%06%12IY%5B15%0B%13%1CIY/B%5D%05%07%11%0F%13%06%03%1B%16A!-%18%01B%5D%03%13%01%15%05%00%04T=%17%22%0FX%5BA=+%18%0BIYY%011*%15LH%5B%15%20.%0EIMJ%1F*%22%1BPHO%02%05%07%12%5CQJ=%18;%02B%5DS%02\'0%00ZC_%134&%0EX%5BA%13%0C%19%16IYY%01%17)%10LH%5B?%123%0AIMJ=0%20%0CPHO%0A%250%05%5CQJ%0B%0B*%05B%5DS,&+%08ZC_%1F+%3E%17X%5BA9:+%1CIYY%0D%3E%22%17LH%0D%14%1F%1A%1B%15%0D%0E%1ER33!%13LH%0B%00%0F%00%0D%13%0AAXS1)S:9H+YK_#%3CO@%5B)7_YJ?%3C-%0F%0C%01%16%02%10%08%1F%1CJ51%03%17I%2569%06Q%1A%16%04%04%07%18%1AX4%16%15%04)?0+%139Z%0D(%08%11%0A%03?%12#%00%1D%5CQ%3CY05%22%12O%1E%14%0A%02%04%1B%05%1AX%16%227%02ZC%0F%0A%04%10%14%02%1CJ5%17%0E%16IYY%093,%17LH%5B3%0D%15%08IMJ%1780%02PHO(#%0B%05%5CQ%1C%02%14%1E%11%1E%1D%17%0FD01?%18%5CQ%1A%16%04%04%07%18%1AX4%1E1%1CZC_%134&%0EX%5BA%07%0D#%14IYY%01!:%0ELH%5B%19/&%0CIMJ%135%3E%02PHO%0A%250%05%5CQ%1C%02%14%1E%11%1E%1D%17%0FD%123%22%18%5CQ%1A%16%04%04%07%18%1AXI%25%0E%1F%00B%5DQ:%25%12%02%0AB%5D%25IM%1C%16%07%04%17%0C%08%0B%0FP%01=7%0BIM%1A%02%17%1E%01%0A%0FDI%1F%180%03PHM:1%01%18%0CPH9IY%0F%0C%01%16%02%10%08%1F%1CJ!%20\'%17IY%09?%06%0C%15Y:-I%09%1B%16%12%10A%1F&%1D%07E%0E%026%01ZCO%1B%0E%0A%12%04R;!%02%12Y%02%1D%1D%06%5CQZ%07%0E%1E%01%1ET%130%15%12M7:%07%17IMZ%13%1D%04%07%0CA)3%04%01W%17%09%13%16IYI%09%1B%16%12%10A%17%3C%01%07E(/%02%07ZCO%0E%00%16A9=%04%07EIT%0EBB%5BFMQIWFCRFQZ%1F%0D%15%06J%1F%17%11%14Z%07%1A%03%18%1DI-.%1E%01V%5CH%19WQ@JRQH%0EVQ@B%5EEQH%1F%12%07%1B%1E%17%10I-.%1E%01C%0F%1B%00%17%04PZZ%1BJPTT@FGD%00PUPB@CN1.%0A%12MZ%5BGIPRUUB%05FHQTRD%5BQ%1F%17%11%14%5CXB%12CM%03%07%05AGGD7VVWGF%5C@JTMZ%12%00%0F%15%13Z%07%00%03%17J%5CIXRWF@OD%17STQ@C%5C%5DB(+%0F%03OBD%17STV@@ZYH%19UQ47)%5DC%0A%0B%11%00YAO%1A%13%01%00%1BI%09%15%0B%04DI@%0A%5EDHYSD@%1DXDHQWTYH#;%16%12YI@%1DXDITUQ%5DD%5CGNUMZ%0B%1E%0F%00X,%14%12%00OHVC%02%0B%0F%03%06J%13%14%0B%14%5C)9%00%1B#%0A%0B%11%00/Q%02%19%13D(%1D%1F%1AIPQ%0BP@BZDOVAQ%08CZDH%25MZ%0B%1E%0F%00X%02%0D%05%00I%1D%1C%11%0D%01I9%1F%07%04DIT%19AB%5ECLLT%0EBBXEIWMH%0B%01%1D%1D%0C%02%0CI9%1F%07%04Q%1A%07%00%03%17J%5CNTRXF_Z%1BJQTSBBCN1%0C%09%11MZZ;KUSQAB%5BEHGT%19DDY5OP%20HK%09\'%04%0B%11O%5C%1F&%1D%07#01%1B%03/B%13%14%0B%14:%1B#%1B%07%25I%07%08%14%02C*PQ%0BS@@XBHLRWG@%5C%5DQZ%19%03%02%17%0B%1FC%02%05%12%15RBD7RPV@CZEIQBQ%08F%5CG9VU%25YH#%19%15%11YI@%1DXDJVUQ%5DB%12EHT%25RYI%09%1D%1C%11OJK%10%18%11%19%0A_%02%11%01%0FTPQ%0BU@B%5BCMDT%19ABZF;H%5E(%1D%1F%1AI%1B%08%00%11L%15%06%1E%08:)3%04%017KPQ%1CR@BYC%5DQ%0BS@BZEMH%5EI@%0A%5EDHV!D@%1DXDHQVWYI%08%06%1D%00%0FZ%13%13%19%11XIT%0EFBZDORAWEG_FQ%5B-%0C%1D%02W%5CH%0EPQ@C%5CC%5DWQTGECO%1B%08%00%11MZZ%0COT%06%02%14C_YH.SSFE%5EBLSQHK%10%18%11%19%0A_%1C%0D%0F?%06%0C%15?%06%3E%19%19)P,%14%12%00%5BQ%09%1A%13%01%00%1BI%09%15%0B%04DI@%0AXDHVTD@%1DXDHQPWYH#;%16%12Y%0A%1F%02%1AH!*%0E%0E+?8%00%0B%3C%5BI@%1D%5BDHQUTCWZ%0CIQTPF%5BP%5CH%0EVQGE%5EBUQ%1CP@4)EQZ%06%13%15%13%01O%05%1C%19%1C%16%07%04%17%0C%08%0B%0FP7%00%13%08IM%1A%1F6\'%0C#8\'7%1CZC)E;%06%04%02%10Q%1B%3C,%1C:9%1B%08%00PH9%5C5%1C%00%02#%16%10%16%04ZC)P%0E%20,%08%5BQ-3%03%1D%5C%1F6\'%0C#I15%05%05B%5DQJL4%1E%03%04%5CQH9IYI3?%1A%18?I1?%07%1BPHMJX%05,%22%0AIMH-O1)C%1C%3E%03%15%00%08/%13%0A%01%15X%5B7I9(%06%12K%14%1F%1A%1B%15%0D%0E%1ER3%11%20%0ELH%0B%00%0F%00%0D%13%0AAXZA_#J?%3C-)A/%25%3COI%5BY1_#%3C9:%5B)7)QHNI%135%08%19PHMH%5BZA_#J?%3C-)A/%25%3CM%1C%16%07%04%17%0C%08%0B%0FP3%0D%15%08IM%1A%02%17%1E%01%0A%0FDI%5BZB%5CS@O:-%5BA/%25HOIXSK/%25J?%3CY)AUS:9JQY1)S@O:-/C_PJEJ+/C_PJ?%3CYYB_#%3CMJXY1)QHO:-%5B1_YJ?%3C%5BSA/%25JEJ+/AUS:9JQY1)S@O:-YK_#%3C9%1C%16%07%04%17%0C%08%0B%0FP3+:%08IM%1A%02%17%1E%01%0A%0FD%16%22%07%1B%5CQJ-62%07B%5DS%20%071%03ZC_%134&%0EX%5BA=+%18%0BIY%0F%0C%01%16%02%10%08%1F%1CJ%17;0%14IY%09%18%11%0C%14%16%0FPZ%1E%0D%08%04%0B%07PZ1)S:9HY)AUS:9JQY1)S@O:-YK_#%3CO@%5B)7)%05%07%11%0F%13%06%03%1B%16A%13%198%02B%5D%03%13%01%15%05%00%04T%0B%046%14X%5BA=/#%11IYY;%1F%1B%19LH%5B%15%20.%0EIMJ9!%13%1BPH%19%07%05%1C%09%00%11%0E%0AA)%0B!%04PH%1F%13%15%06%1F%06%16AL%15%09%02%0F%1B%1EAL:-Y1)QH?JQY1)S@O:-YK_#%3C9%1C%16%07%04%17%0C%08%0B%0FP%01%1F6%08IM%1A%02%17%1E%01%0A%0FDI%13=%1A%1BPHM:%25%14?%01PH9I)%172%1BPHM%1C*%10%0F%06%1A:)%154%1EB%5D%25%5C)%09%15%1CQ%12%0D%0F%07%15%19%1D%04T-%17!%11X%1D%18%02%08M5%12%09%02F%255%0D%15M%03=%05%05Q%1A%07%0E%1E%01%1ET5+%02%10M%15(8%0CI%0B%13%06%02F%1B%0A%17%14O%1C%17%04%13%0C%09II%5B)1_#:O@+/AUS:9%3C%5B)A/%25%3C9J+/7/S:9%3C+Y1)%25%3CMHK%1E%0F%00X%0E(%08%01O%0D%106%16L0%03%0B%1AYPJEJ+/CX5+%02%10YI%06%11%0CA-&*%02W%077%0E%15Z%06%13%18T%13(%07%10MZZ%1BJQVVCFGD%00PTT3ACO%03%0D%01%15P7.%20%08Z%13%09%19%1E%0F%5C%13(%07%10LZZ%0CJQTWBWZ%1BJQTQCDC%5D%03%12%13%08%04%11%02%5C%13(%07%10Y%09%09%15%0B%04DIAA%5BELRAQ%1F@ZDHSSHJ%19#%17%09%5CLQ%08CZAIUIQ%1F@ZFKVVHK7.%20%08%5CO:+Y1/S@O:-/A/S:9%3C-Y1)%25:O:-/1_YJ?%3C-/Q%16%0A%04%05%0AK%11%0B%07%1DALQ%1FDZDHTUDFG_@NH%5E%0A9%11%1BIPQ%0BP@BZEOSAWEG%5CDQZ!%25$%02A_C%03%16%04%11%19Q%17%19%12%01AX@%5CFJPSD@%1DXDHQUVYH%01=%1B%10YI@%1D%5CDHPTPUD_AMUMZ%0B%11%05%1A%0B%15D%066%25%1AI%17%13%12%11+7.%20%08%3C_%0E%3C%1B%1BI%1F#(%15X%1D&%1D%09MO:+Y1/YJ?%3C%5BSA/%25%3CO:%5B)7)%25J?%3C-)A/%25%3C?JQY1)%25%3CH(7(%1AYPJO:%5B)7)#J?%3C-YB_S:O:-/1_#%3C9H%5DYK_#%3CMH%5B%15,#%08J%03#%3C%06B%1B4%08%15M950%04QZ-&*%02W%5C1&%3E%11Z#\'%18%09HA0%03%0B%1AO%05%03%16%04%11%19Q%17%19%12%01AXB%05FHWPWD_%5CL@XTHJ%19#%17%09%5C!%25$%02V%25%0B%18%14LXY1)S@O:-%5BU%5CH%0EUQ@B%5BAMDRTEDZ%5DBISQDE%5CYH%0EVPAF%5EBQZ%06%13%15%13%01O%05%1C%19%02%1F%1C%19%00X%06%3E+%01O%1D:%12%14L%0E%3C%1B%1BX5+%02%10YI%1C%15%0AA-%00%3E%03W%5CH%0EVQABY@UQ%1CP@@%5BGQZ%13%09%19%1E%0F%5C1%00*%10LZZ%1BJQRWFDGD%00PT%25H4C%5D%0B%16%0D%15%13%1AB=%19/%15H%0B%11%0B%07%1DALQ%1F@ZFOWTLFEZE@H%5E(%11%3C%1BIPQ%1CR@BR0%5DQ%0BS@BZ@JH_%1A%1F%3E%03%05E%06&-%04Z%058%11%10HJ+)A/#J?%3C-Y1_#%3C9%3C%5B)7)#J?%3C-)A/%25%3C9M%17(%20%05QZ%19%03%02%17%0B%1FC%02%05%12%15RBD%17PTQ@B%5DA%5DQ%1CP@BZ0Q%5B-%00%3E%03W%13%22+%15_MY1/S:?JQY1)%25J?J+/7)S:9%3C+Y1)%25:O@%5B)7)%25%5ELQ%1FCZDHPRSUD_AMTM%5BXB%12FHQR%25UB%05FHQTUC%5BQ%16%0A%04%05%0AK%0F%18%11%0C%14%16%0FP%1D&%1D%09Z%19%07%05%1C%09%00%11%0E%0AA%13%25.%05PH%1F%13%15%06%1F%06%16A!%25%3C%08B%5DS8%1D*%00ZC_%134&%0EX%5BA%1B%12;%13IY%0F%0C%01%16%02%10%08%1F%1CJ1%20&%15IY%09%1D63%17LH+;%1B%0C%14IM%3CM(%08%11%0A%03?$%1E%00%06%5CQ%3C_%1C%16%07%04%17%0C%08%0B%0FP+9%0C%09IM%1A*%10%0F%06%1A:!%0F%02%1EB%5D%25%5C%13#;%04B%5D#(%15%19%1CZC)C%16&*%06ZC/%0F7%1C%16X%5BA1%0A%14%16IY/W.%1A%04%16%03+#+9%0AIM%3CK%0F%0C%01%16%02%10%08%1F%1CJ5-%20%15IY%09%18%11%0C%14%16%0FPZB_#%3CO@%5B)7_PJO:%5B)7)#J?%3C%5B)7)QHNI!#%05%03PHMH%5BZA/%25H%19%07%05%1C%09%00%11%0E%0AA%25%22%18%05PH%1F%13%15%06%1F%06%16ALFW)+9%1D%18LH-ZC%5D#J?%3C-%0F0%16%1D%13%06:%17%02%1F%18PH9%5C1%19%0E%02C%07%11%0F%13%06%03%1B%16A%133%05%03B%5D%03%13%01%15%05%00%04TP05%0E%07ZC%5D#4%024%05ZC)P%0A%17%20%1CZC%5D%05%07%11%0F%13%06%03%1B%16A=%10%07%1CB%5D%03%13%01%15%05%00%04TPJO:%5B)7)#J?%3C-YB_S:O:-/1_#%3C9HYYB_#:O:+YK_#%3C9J+Y1)%25%3CO:-/1_#%3C9:%5B)7)%25H%19%07%05%1C%09%00%11%0E%0AA1%01%10%1APH%1F%13%15%06%1F%06%16ALFW)+9%1D%18LH-ZC%5D#$,6%06ZC)%05%07%11%0F%13%06%03%1B%16A1%0F%01%1CB%5D%03%13%01%15%05%00%04T%179,%0EX%5BA%1F9.%0AIYY%19#;%12LH%5B%15%20.%0EIMJ9!%13%1BPH%19%07%05%1C%09%00%11%0E%0AA%07%02%1E%1APH%1F%13%15%06%1F%06%16A)%197%00B%5DS%12%013%05ZC_!&=%13X%5BA5%17%0E%16IYY#\'%01%0ELH%0D%14%1F%1A%1B%15%0D%0E%1ER;%1F%13%0FLH%0B%00%0F%00%0D%13%0AAX)7/%1B6%20%10X%5B7_#%3CM:!%05(%02PH9%1C%16%07%04%17%0C%08%0B%0FP%01%07%1A%16IM%1A%02%17%1E%01%0A%0FD%027&%1C%5CQJ)#:%0AB%5DS(7%18%1FZC_%0B%14&%11X%5BA-%01*%14IYY%05,0%0ELH%0D(%08%11%0A%03?%201%3C%1A%5CQ%3CY%0A)7%1FO%1E%14%0A%02%04%1B%05%1AX,%0C%04%1EZ%05%1E%10%0FM%1A%02%17%1E%01%0A%0FD4%02%06%1E/%17%0B%0C%0F-I%17%12%0D%0F%07%15%19%1D%04T%17%251%0FX%5B%11%06%1D%15%11%13%1ERB/%25:%0764%03B%5D%25J?%3CY)%1D%04%14%19LH-%0F%0C%01%16%02%10%08%1F%1CJ%25=9%0AIY%09%18%11%0C%14%16%0FPZ%0D%1C!%12LHYY1)%05%07%11%0F%13%06%03%1B%16A%0F%20?%1CB%5D%03%13%01%15%05%00%04TP(7%18%1FZC%5D#%20%17%13%08ZC)PH%19%07%05%1C%09%00%11%0E%0AA=08%1APH%1F%13%15%06%1F%06%16A%1763%01B%5DS%06%10%19%02ZC_%179,%0EX%5BA9:+%1CIY%0F%0C%01%16%02%10%08%1F%1CJ%13%00(%0AIY%09%18%11%0C%14%16%0FPZB%5CS:9JQY1)QNLJX)A/#@O:-YK_#%3C9J+Y1)%25%3C9J+/C/S:?J+)A/%25%3CO:%5B)7)%25J?%3C-)A/%25%3C?JQY1)%25%3C9HYY1)Q:O@%5B)7)%05%0D%01%15P;%138%16Z%02%14%1E%11%1E%1D%17%0FD%02%051%04%5CQ%1A%16%04%04%07%18%1AXF8%14@B_A_%1C%02%14%1E%11%1E%1D%17%0FD$%064%04%5CQ%1A%16%04%04%07%18%1AXI%03%15%08%00B%5DQ:%25%12%02%0AB%5D%25IM%1C%16%07%04%17%0C%08%0B%0FP7:%07%17IM%1A%02%17%1E%01%0A%0FD8%01%1D%12%5CQJ%133%05%03B%5DS%06%10%19%02ZC_%1F+%3E%17X%5BA%1F9&%1CIYY?%3C.%19LH%5B%19/&%0CIMJ%1F%180%03PHO,28%12%5CQJ!%176%1CB%5DS%0E%3C)%1FZC%09%1E%14%0A%02%04%1B%05%1AX%066%17%1FZC%0F%0A%04%10%14%02%1CJ%5CP8%15%16%1EZC%5DRI%13;9%01B%5DQHOI%5B)7%5D%05%07%11%0F%13%06%03%1B%16A%25,%1D%1DB%5D%03%13%01%15%05%00%04T-%0F%0D%19X%5BA%17%1D2%17IYY/%3C%1D%0CLH%5B%15%20.%0EIMJ9!%13%1BPH%19%07%05%1C%09%00%11%0E%0AA%13=%1A%1BPH%1F%13%15%06%1F%06%16ALI%131#%0EPHMKX7%0C%22%0BIMHYYB_P:O:+SA/%25JEJ+/7_#J?%3C-/7_#%3CM:%5B)1_#:O:-/A/S:9%3C-Y1)%25:O:-/1_YJ?%3C-/7%5D%05%07%11%0F%13%06%03%1B%16A%13+%17%1DB%5D%03%13%01%15%05%00%04TPIO:-YK_#%3COI%5BY1_#%3C9:%5B)7_#%3C9HYXB%1F%0F%25%16IY%5BC_PJ?%3CY%0F%06%11%0CA=*%1A%1DW/Z%0C%20_7PFV%05%5E%3C&R%5EH%19%17%1F\'%1F%1F%15HXZ=CC%5CP!%1F*&FMR%1B)$?CHC%1D%1D%14;%1E%0E%03%0E%14%0C%13%3C%0B?%0F%0C4%19%0D%1BZMF%08%1B%16%16%1F%01CHC%08%1D%0D%11%04%0EFMR!%0F%0BR*%02%19%1F%19%04%07R*%1C%0EZ(%0C%1F%0B%02%00%0C%5BPFV%01%0E%1A%22%0E%1D%0DVTC%0F%0F%1E=%16%1B%1C%1F%22%02%09%0C%05%10%17%19FMR%1A%05%18%1D%19%0B%1E%14%14%0F%1F%16C9Z%16%07%04%17%0C%08%0B%0FP%01-%15%17IM%1A%02%17%1E%01%0A%0FD%20%13%22%19%5CQJ!)%15%1FB%5DS,&+%08ZC_%134&%0EX%5BA%1B%20)%0BIYY%09%01%0D%19LH%5B%1D2%3C%17IMJ%1B78%00PHO%06:(%1C%5CQJ%03%15%08%00B%5DS%02\'0%00ZC_5#.%19X%5B%17%12%0D%0F%07%15%19%1D%04T-)%00%0EX%5B%11%06%1D%15%11%13%1ERB-%11%00%12IY%5BA%5C%13%12%25%0DX%5BC%09%1E%14%0A%02%04%1B%05%1AX4%063%1FZC%0F%0A%04%10%14%02%1CJ%5C%1B.%0C%18X%5BC_P%12%09%07%08ZC%5D%05%07%11%0F%13%06%03%1B%16A%13%05%25%1DB%5D%03%13%01%15%05%00%04T5#.%19X%5BA%1F-#%0BIYY%05,0%0ELH%5B%15%20.%0EIMJ)%0B!%04PHO,28%12%5CQJ=&)%00B%5D%05%07%11%0F%13%06%03%1B%16A58;%1DB%5D%03%13%01%15%05%00%04TPJ?%3C%5BSA/%25JLJ%5B)A/%25%3C?J+/A/%25%3CMHZZA/%25JEJ+/C_PJO:%5B)7)#J?%3C-YB_S:O:-/1_#%3C9HY%0F%0C%01%16%02%10%08%1F%1CJ%07%19.%0BIY%09%18%11%0C%14%16%0FPZA_#J?%3C-)A/%25%3COI%5BY1_#%3C9:%5B)7)QLO@%5B)7%5DSIL$%16$%19%5CQHNI%1F%10&%01PHMH%0D%14%1F%1A%1B%15%0D%0E%1ER\'%22=%0ELH%0B%00%0F%00%0D%13%0AAXY1)QJLI%5BZ1_#:EJ+/AUS:9%3C%5B)A/%25%3C9%3C%5B)7%5D#J?%3C-%5B@%5C%1B.%0C%18X%5BC%5D%0587%19%01ZCO%1E%14%0A%02%04%1B%05%1AX%0E%3C)%1FZC%0F%0A%04%10%14%02%1CJ%5CY@?%3C%5B)7%5D#J?%3C-%0F%0C%01%16%02%10%08%1F%1CJ=+%18%0BIY%09%18%11%0C%14%16%0FPZ%1E%0D%08%04%0B%07PS1)Q:O:-/%17%12%0D%0F%07%15%19%1D%04T%134&%0EX%5B%11%06%1D%15%11%13%1ERB/%25:?%3C-Y1)Q:O:-YK_#%3C9%1C%16%07%04%17%0C%08%0B%0FP?%1E0%14IM%1A%02%17%1E%01%0A%0FD%20%1F%1D%18%5CQJ%07%22!%02B%5DS8%1D*%00ZC_%134&%0EX%5BA=+%18%0BIY%0F%0C%01%16%02%10%08%1F%1CJ%1B%0E&%08IY%09%18%11%0C%14%16%0FPZ\'2-%15LHY)?%12-%14LH-Z%0D%04%15%17LHY%0F%0C%01%16%02%10%08%1F%1CJ=%09%19%08IY%09%18%11%0C%14%16%0FP+%1B%1B%00IMJ%1B78%00PHO%0A%250%05%5CQJ=&)%00B%5DS%0A!3%04ZC_%13%025%10X%5BA9:+%1CIY%0F?,%3E%12LHK%14%1F%1A%1B%15%0D%0E%1ER%01%079%0DLH%0B%00%0F%00%0D%13%0AAXZ;-3%0ELHYXB%03%22(%17IY%5BC_P8%15%16%1EZC%5D%05%07%11%0F%13%06%03%1B%16A!%0F%02%1EB%5D%03%13%01%15%05%00%04T!%10%0B%19X%5BA%03*%14%15IY%0F%0C%01%16%02%10%08%1F%1CJ%13%08%14%08IY%09%18%11%0C%14%16%0FP?%123%0AIMJ%031:%06PHO,%085%18%5CQJ%0F42%1DB%5DS(7%18%1FZC%09%1E%14%0A%02%04%1B%05%1AX%20%0F%0D%1CZC%0F%0A%04%10%14%02%1CJ%5C#%3C?%02\'6%1B%5CQ%3CO:-%5B1%07%19.%0BIY/%17%12%0D%0F%07%15%19%1D%04T%1B%0C%0B%0DX%5B%11%06%1D%15%11%13%1ER/04%1BLH%5B%15%20.%0EIMJ%1B78%00PHO,%18%25%1D%5CQJ%0F%207%0AB%5DS%166%14%01ZC_%1F%15%1C%13X%5BA%132;%12IYY?%3C.%19LH%5B%19+3%00IMJ%1B78%00PHO%0E%1A(%1D%5CQJ)#:%0AB%5D%05%07%11%0F%13%06%03%1B%16A%07&%12%1FB%5D%03%13%01%15%05%00%04TPI-%141%00B%5DQKLJQY1)SIOJ+Y1)%25:O:-/C%5DQJLJ+)A/#J?%3C-Y1_#%3C9%3C%5B)7)#J?%3C-)AUS:9%3C-%5B%17%12%0D%0F%07%15%19%1D%04T=)%01%0CX%5B%11%06%1D%15%11%13%1ERB%25%1B.%11IY%5B1!%1E4%11IY/B5-%20%15IY%5B%171%20&%15IYI%0C%01%16%02%10%08%1F%1CJ-;7%08IY%09%18%11%0C%14%16%0FP%01%0F&%0DIMJ9%25(%01PHO0%1B%11%12%5CQJ%03+*%04B%5DS(7%18%1FZC_%13,%02%16X%5BA%07%09%10%10IYY\'%3E%20%1BLH%5B%15%20.%0EIMJ9!%13%1BPH%19%07%05%1C%09%00%11%0E%0AA173%18PH%1F%13%15%06%1F%06%16A%07&$%04B%5DS,&+%08ZC_12%1D%0EX%5BA%07%0D#%14IYY3%0D3%11LH%5B%1D2%3C%17IMJ1%11:%07PHO$8%17%07%5CQJ)#:%0AB%5DS%0A1#%1FZC_%179,%0EX%5BA%17%0D%14%1CIYY%05,0%0ELH%5B%19/&%0CIMJ%1780%02PHO%06%04%0A%18%5CQJ%07%22!%02B%5DS,&+%08ZC%09%1E%14%0A%02%04%1B%05%1AX4%1E1%1CZC%0F%0A%04%10%14%02%1CJ%5C#%3C?:-/A/%25H?J+/7%09%22%03%01%13%12%5C#%17%22*Y%07%05%1C%09%00%11%0E%0AIY%09%18%11%0C%14%16%0FPCR%09C;%06%04%02%10D%1F3P/%5C%16%07%04%17%0C%08%0B%0FX%5B%11%06%1D%15%11%13%1ERY@%05Z%3E%03%15%00%08Z=V0*M%14%1F%1A%1B%15%0D%0E%1EZC%0F%0A%04%10%14%02%1CJGN%1C_;%12%17%18%16V%06%226;O%0C%01%16%02%10%08%1F%1CB%5D%03%13%01%15%05%00%04TIX%19Z*%10%0F%06%1AO%03)%04%3EW%12%0D%0F%07%15%19%1D%04%5CQ%1A%16%04%04%07%18%1AXRS%1CK(%08%11%0A%03J(%15%05&I%1E%14%0A%02%04%1B%05%1APH%1F%13%15%06%1F%06%16AWY%0DI0%16%1D%13%06O5K%1B8E%07%11%0F%13%06%03%1B%16IM%1A%02%17%1E%01%0A%0FDPF%0FQ.%1A%04%16%03%5E+%1D%1E4%5C%02%14%1E%11%1E%1D%17%0FLH%0B%00%0F%00%0D%13%0AAH%0FQ.%1A%04%16%03%5E3%5E%184%5C%02%14%1E%11%1E%1D%17%0FLH%0B%00%0F%00%0D%13%0AABE%17O%22%03%01%13%12%5C?%06%1D-Y%07%05%1C%09%00%11%0E%0AIY%09%18%11%0C%14%16%0FP@R%09C;%06%04%02%10D%03%22%06(%5C%16%07%04%17%0C%08%0B%0FX%5B%11%06%1D%15%11%13%1ERXM%05Z%3E%03%15%00%08Z%0B6--M%14%1F%1A%1B%15%0D%0E%1EZC%0F%0A%04%10%14%02%1CJFH%1C_;%12%17%18%16V4%10-%3CO%0C%01%16%02%10%08%1F%1CB%5D%03%13%01%15%05%00%04TIT%19Z*%10%0F%06%1AO%0B34%3EW%12%0D%0F%07%15%19%1D%04%5CQ%1A%16%04%04%07%18%1AXRT%1CK(%08%11%0A%03J0%1F5&I%1E%14%0A%02%04%1B%05%1APH%1F%13%15%06%1F%06%16AWP%0DI0%16%1D%13%06O%1B?%138E%07%11%0F%13%06%03%1B%16IM%1A%02%17%1E%01%0A%0FDRB%0FQ.%1A%04%16%03%5E%1D%3E%155%5C%02%14%1E%11%1E%1D%17%0FLH%0B%00%0F%00%0D%13%0AAI%0FQ.%1A%04%16%03%5E;%0DG4%5C%02%14%1E%11%1E%1D%17%0FLH%0B%00%0F%00%0D%13%0AABC%17O%22%03%01%13%12%5C%01;M-Y%07%05%1C%09%00%11%0E%0AIY%09%18%11%0C%14%16%0FPAS%09C;%06%04%02%10D1%1A8(%5C%16%07%04%17%0C%08%0B%0FX%5B%11%06%1D%15%11%13%1ER%5ED%05Z%3E%03%15%00%08Z9W7-M%14%1F%1A%1B%15%0D%0E%1EZC%0F%0A%04%10%14%02%1CJFN%1C_;%12%17%18%16V%02!7%3CO%0C%01%16%02%10%08%1F%1CB%5D%03%13%01%15%05%00%04TIR%19Z*%10%0F%06%1AO!R%208W%12%0D%0F%07%15%19%1D%04%5CQ%1A%16%04%04%07%18%1AXPU%1CK(%08%11%0A%03J%20)9%20I%1E%14%0A%02%04%1B%05%1APH%1F%13%15%06%1F%06%16AVT%0DI0%16%1D%13%06O%07&,%3EE%07%11%0F%13%06%03%1B%16IM%1A%02%17%1E%01%0A%0FDPB%0FQ.%1A%04%16%03%5E%05,#%3E%5C%02%14%1E%11%1E%1D%17%0FLH%0B%00%0F%00%0D%13%0AABA%17O%22%03%01%13%12%5C;F7\'Y%07%05%1C%09%00%11%0E%0AIY%09%18%11%0C%14%16%0FPAY%09%05H\")")}();var wBSl=Zberb[Zberb.RVspb(0)]();while(wBSl<Zberb[Zberb.NQnpb(1)]())switch(wBSl){case (0x75bcd15-0O726746425):wBSl=localStorage[Zberb.lbdnb(2)](Zberb.Bt0mb(3))==(0O57060516-0xbc614d)?Zberb[Zberb.tlnnb(4)]():Zberb[Zberb.pginb(5)]();break;case (0O57060516-0xbc614d):wBSl=Zberb[Zberb.NQnpb(1)]();{document[Zberb.RPRnb(6)](Zberb.h8Enb(7))[(0x75bcd15-0O726746425)][Zberb.RVspb(8)]();alert(Zberb.NQnpb(9))}break;case (15658734^0O73567354):wBSl=Zberb[Zberb.NQnpb(1)]();var QwJl=Zberb[Zberb.RVspb(0)]();while(QwJl<Zberb[Zberb.NQnpb(1)]())switch(QwJl){case (0x75bcd15-0O726746425):QwJl=localStorage[Zberb.lbdnb(2)](Zberb.Bt0mb(3))==(0O57060516-0xbc614d)?Zberb[Zberb.tlnnb(4)]():Zberb[Zberb.NQnpb(1)]();break;case (0O57060516-0xbc614d):QwJl=Zberb[Zberb.NQnpb(1)]();{}break;}break;}localStorage[Zberb.lbdnb(10)](Zberb.Bt0mb(3),(0O57060516-0xbc614d));window[Zberb.Bt0mb(11)](Zberb.tlnnb(12),function(syMl){localStorage[Zberb.lbdnb(10)](Zberb.Bt0mb(3),(0x75bcd15-0O726746425))},NaN===NaN);
+  </script>
+</html>
